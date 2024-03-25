@@ -1,0 +1,42 @@
+{
+  "name": "@/web",
+  "type": "module",
+  "private": true,
+  "version": "0.0.0",
+  "main": "src/http/clusters.ts",
+  "scripts": {
+    "start": "dotenv -e ../../.env -- tsx .",
+    "dev": "nodemon",
+    "lint": "eslint ./**/*.ts"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@/eslint-config"
+    ]
+  },
+  "nodemonConfig": {
+    "ignore": [
+      ".git",
+      "node_modules"
+    ],
+    "watch": [
+      "./src"
+    ],
+    "exec": "npm start",
+    "ext": "ts, js"
+  },
+  "dependencies": {
+    "@/env": "workspace:*",
+    "express": "^4.19.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.3"
+  },
+  "devDependencies": {
+    "@/eslint-config": "workspace:*",
+    "@/tsconfig": "workspace:*",
+    "@types/express": "^4.17.21",
+    "eslint": "^8.57.0",
+    "nodemon": "^3.1.0"
+  }
+}
