@@ -1,0 +1,29 @@
+{
+  "name": "@/client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && vite build",
+    "start": "vite preview",
+    "dev": "vite",
+    "lint": "eslint ./**/*.ts",
+    "format": "cd ../../ && pnpm format"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@/eslint-config"
+    ]
+  },
+  "devDependencies": {
+    "@/env": "workspace:*",
+    "@/eslint-config": "workspace:*",
+    "@/tsconfig": "workspace:*",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0"
+  },
+  "dependencies": {
+    "@discord/embedded-app-sdk": "^1.0.2"
+  }
+}

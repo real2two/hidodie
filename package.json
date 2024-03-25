@@ -7,13 +7,15 @@
     "packages/*"
   ],
   "scripts": {
+    "build": "turbo build",
     "dev": "dotenv -- turbo run dev",
     "start": "dotenv -- turbo run start",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md}\"",
     "schema/push": "cd packages/db && pnpm schema/push",
     "schema/generate": "cd packages/db && pnpm schema/generate",
-    "schema/migrate": "cd packages/db && pnpm schema/migrate"
+    "schema/migrate": "cd packages/db && pnpm schema/migrate",
+    "cloudflared": "cloudflared tunnel --url http://localhost:5173"
   },
   "devDependencies": {
     "@/eslint-config": "workspace:*",
