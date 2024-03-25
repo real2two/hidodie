@@ -5,21 +5,18 @@ import {
   RESTPatchAPIGuildMemberResult,
 } from "discord-api-types/v10";
 
-export const discordSdk = new DiscordSDK(
-  import.meta.env.VITE_DISCORD_CLIENT_ID,
-);
-
 export async function handleDiscordAuthentication() {
-  try {
-    const auth = await setupDiscordSdk();
+  const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 
+  try {
+    const auth = await setupDiscordSdk(discordSdk);
     return {
       ...discordSdk,
 
       user: auth.user,
-      member: await getVoiceMember(auth.access_token),
-      guild: await getVoiceGuild(auth.access_token),
-      channel: await getVoiceChannel(),
+      member: await getVoiceMember(discordSdk, auth.access_token),
+      guild: await getVoiceGuild(discordSdk, auth.access_token),
+      channel: await getVoiceChannel(discordSdk),
     };
   } catch (err) {
     console.error(err);
@@ -33,7 +30,7 @@ export async function handleDiscordAuthentication() {
   }
 }
 
-async function setupDiscordSdk() {
+async function setupDiscordSdk(discordSdk: DiscordSDK) {
   await discordSdk.ready();
 
   // Authorize with Discord Client
@@ -81,14 +78,17 @@ export async function getUserGuilds(access_token: string) {
   return (await response.json()) as RESTAPIPartialCurrentUserGuild[];
 }
 
-export async function getVoiceGuild(access_token: string) {
+export async function getVoiceGuild(
+  discordSdk: DiscordSDK,
+  access_token: string,
+) {
   if (!discordSdk.guildId) return null;
 
   const guilds = await getUserGuilds(access_token);
   return guilds.find((g) => g.id === discordSdk.guildId);
 }
 
-export async function getVoiceChannel() {
+export async function getVoiceChannel(discordSdk: DiscordSDK) {
   if (!discordSdk.channelId || !discordSdk.guildId) return null;
 
   return await discordSdk.commands.getChannel({
@@ -96,7 +96,10 @@ export async function getVoiceChannel() {
   });
 }
 
-export async function getVoiceMember(access_token: string) {
+export async function getVoiceMember(
+  discordSdk: DiscordSDK,
+  access_token: string,
+) {
   if (!discordSdk.guildId) return null;
 
   const response = await fetch(
