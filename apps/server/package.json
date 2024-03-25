@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@/env": "workspace:*",
+    "discord-api-types": "^0.37.76",
     "hyper-express": "^6.14.12",
     "tsx": "^4.7.0",
     "typescript": "^5.4.3"

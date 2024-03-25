@@ -24,6 +24,7 @@
     "vite": "^5.2.0"
   },
   "dependencies": {
-    "@discord/embedded-app-sdk": "^1.0.2"
+    "@discord/embedded-app-sdk": "^1.0.2",
+    "discord-api-types": "^0.37.76"
   }
 }

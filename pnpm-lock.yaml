@@ -26,6 +26,9 @@ importers:
       '@discord/embedded-app-sdk':
         specifier: ^1.0.2
         version: 1.0.2
+      discord-api-types:
+        specifier: ^0.37.76
+        version: 0.37.76
     devDependencies:
       '@/env':
         specifier: workspace:*
@@ -48,6 +51,9 @@ importers:
       '@/env':
         specifier: workspace:*
         version: link:../../packages/env
+      discord-api-types:
+        specifier: ^0.37.76
+        version: 0.37.76
       hyper-express:
         specifier: ^6.14.12
         version: 6.14.12
@@ -1243,6 +1249,10 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       path-type: 4.0.0
+    dev: false
+
+  /discord-api-types@0.37.76:
+    resolution: {integrity: sha512-GQI02JvBVl9+WQiMmyc/OFuJ4bBBf2VWb6NjPBnzrrdF2D/2S07mA1ZCd5+IhHRjU8wQ83c/hmjj9nn1+r/K9g==}
     dev: false
 
   /doctrine@3.0.0:
