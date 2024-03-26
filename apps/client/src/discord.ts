@@ -219,15 +219,10 @@ export async function getVoiceMember(
   }
 
   return {
-    nick: null,
-    avatar: null,
     roles: [],
     joined_at: "0",
-    premium_since: null,
     deaf: false,
     mute: false,
     flags: 0 << 0,
-    pending: false,
-    communication_disabled_until: null,
   };
 }
