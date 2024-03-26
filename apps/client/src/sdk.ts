@@ -20,7 +20,7 @@ export async function handleDiscordSdk() {
     });
 
     return sdk;
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     return null;
   }
