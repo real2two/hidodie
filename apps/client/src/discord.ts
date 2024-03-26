@@ -14,6 +14,7 @@ export async function handleDiscordAuthentication() {
       ...discordSdk,
 
       user: auth.user,
+      locale: (await discordSdk.commands.userSettingsGetLocale()).locale,
       member: await getVoiceMember(discordSdk, auth.access_token),
       guild: await getVoiceGuild(discordSdk, auth.access_token),
       channel: await getVoiceChannel(discordSdk),
