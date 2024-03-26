@@ -14,17 +14,23 @@ const queryParams = new URLSearchParams(window.location.search);
 const isEmbedded = queryParams.get("frame_id") != null;
 
 export enum SessionStorageQueryParam {
-  user_id = "user_id",
-  guild_id = "guild_id",
-  channel_id = "channel_id",
+  userId = "user_id",
+  guildId = "guild_id",
+  channelId = "channel_id",
 }
 
 export async function getDiscordSdk() {
   if (isEmbedded) return new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 
-  const mockUserId = getOverrideOrRandomSessionValue("user_id");
-  const mockGuildId = getOverrideOrRandomSessionValue("guild_id");
-  const mockChannelId = getOverrideOrRandomSessionValue("channel_id");
+  const mockUserId = getOverrideOrRandomSessionValue(
+    SessionStorageQueryParam.userId,
+  );
+  const mockGuildId = getOverrideOrRandomSessionValue(
+    SessionStorageQueryParam.guildId,
+  );
+  const mockChannelId = getOverrideOrRandomSessionValue(
+    SessionStorageQueryParam.channelId,
+  );
 
   const discordSdk = new DiscordSDKMock(
     import.meta.env.VITE_DISCORD_CLIENT_ID,
@@ -88,9 +94,9 @@ export async function handleDiscordAuthentication() {
 
       user: auth.user,
       locale: (await discordSdk.commands.userSettingsGetLocale()).locale,
-      member: await getVoiceMember(discordSdk, auth.access_token),
-      guild: await getVoiceGuild(discordSdk, auth.access_token),
-      channel: await getVoiceChannel(discordSdk),
+      member: await getActivityMember(discordSdk, auth.access_token),
+      guild: await getActivityGuild(discordSdk, auth.access_token),
+      channel: await getActivityChannel(discordSdk),
     };
   } catch (err) {
     console.error(err);
@@ -181,7 +187,7 @@ export async function getUserGuilds(
   return [];
 }
 
-export async function getVoiceGuild(
+export async function getActivityGuild(
   discordSdk: DiscordSDK | DiscordSDKMock,
   access_token: string,
 ) {
@@ -191,7 +197,9 @@ export async function getVoiceGuild(
   return guilds.find((g) => g.id === discordSdk.guildId);
 }
 
-export async function getVoiceChannel(discordSdk: DiscordSDK | DiscordSDKMock) {
+export async function getActivityChannel(
+  discordSdk: DiscordSDK | DiscordSDKMock,
+) {
   if (!discordSdk.channelId || !discordSdk.guildId) return null;
 
   return await discordSdk.commands.getChannel({
@@ -199,7 +207,7 @@ export async function getVoiceChannel(discordSdk: DiscordSDK | DiscordSDKMock) {
   });
 }
 
-export async function getVoiceMember(
+export async function getActivityMember(
   discordSdk: DiscordSDK | DiscordSDKMock,
   access_token: string,
 ): Promise<RESTPatchAPIGuildMemberResult | null> {

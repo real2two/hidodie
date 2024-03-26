@@ -9,6 +9,30 @@ router.get("/", (req, res) => {
   });
 });
 
+router.get("/room", async (req, res) => {
+  const { instance_id: instanceId } = req.query_parameters;
+
+  if (typeof instanceId !== "string") {
+    return res.status(500).json({ error: "instance_id must be provided" });
+  }
+
+  const roomId = instanceId; // TODO: Add some sort of instance ID validation
+  const server = {
+    // If you're playing on a browser, this is the WebSocket you'd connect to
+    main: "localhost:3001",
+    // If you're playing through Discord, you must connect through a "URL mapping"
+    // https://discord.com/developers/docs/activities/development-guides#url-mapping
+    discord: "/api/server",
+  };
+
+  res.json({
+    room: {
+      id: roomId,
+      server,
+    },
+  });
+});
+
 router.post("/token", async (req, res) => {
   const body = await req.json();
 
