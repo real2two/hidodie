@@ -6,11 +6,13 @@ main();
 async function main() {
   const sdk = await handleDiscordSdk();
 
-  const username = sdk?.member?.nick || sdk?.user.global_name || "Player";
-  const roomId = sdk?.instanceId
-    ? sdk.instanceId
-    : "00000000-0000-0000-0000-000000000000";
-  const locale = sdk?.locale || "en-US";
+  const username = sdk.member?.nick || sdk.user.global_name || sdk.user.username;
+  const { locale, guildId, channelId, instanceId } = sdk;
 
-  console.log(username, roomId, locale);
+  document.querySelector("#app")!.innerHTML =
+    `<p>Username: ${username}</p>` +
+    `<p>Locale: ${locale}</p>` +
+    `<p>Guild ID: ${guildId}</p>` +
+    `<p>Channel ID: ${channelId}</p>` +
+    `<p>Instance ID: ${instanceId}</p>`;
 }

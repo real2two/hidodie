@@ -1,12 +1,85 @@
-import { DiscordSDK, RPCCloseCodes } from "@discord/embedded-app-sdk";
+import {
+  DiscordSDK,
+  DiscordSDKMock,
+  RPCCloseCodes,
+} from "@discord/embedded-app-sdk";
 import {
   RouteBases,
   RESTAPIPartialCurrentUserGuild,
   RESTPatchAPIGuildMemberResult,
+  PermissionFlagsBits,
 } from "discord-api-types/v10";
 
+const queryParams = new URLSearchParams(window.location.search);
+const isEmbedded = queryParams.get("frame_id") != null;
+
+export enum SessionStorageQueryParam {
+  user_id = "user_id",
+  guild_id = "guild_id",
+  channel_id = "channel_id",
+}
+
+export async function getDiscordSdk() {
+  if (isEmbedded) return new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
+
+  const mockUserId = getOverrideOrRandomSessionValue("user_id");
+  const mockGuildId = getOverrideOrRandomSessionValue("guild_id");
+  const mockChannelId = getOverrideOrRandomSessionValue("channel_id");
+
+  const discordSdk = new DiscordSDKMock(
+    import.meta.env.VITE_DISCORD_CLIENT_ID,
+    mockGuildId,
+    mockChannelId,
+  );
+  const discriminator = String(mockUserId.charCodeAt(0) % 5);
+
+  discordSdk._updateCommandMocks({
+    authenticate: async () => {
+      return {
+        access_token: "mock_token",
+        user: {
+          username: mockUserId,
+          discriminator,
+          id: mockUserId,
+          avatar: null,
+          public_flags: 1,
+        },
+        scopes: [],
+        expires: new Date(2112, 1, 1).toString(),
+        application: {
+          description: "mock_app_description",
+          icon: "mock_app_icon",
+          id: "mock_app_id",
+          name: "mock_app_name",
+        },
+      };
+    },
+    userSettingsGetLocale: async () => ({ locale: "en-US" }),
+  });
+
+  return discordSdk;
+}
+
+export function getOverrideOrRandomSessionValue(
+  queryParam: `${SessionStorageQueryParam}`,
+) {
+  const overrideValue = queryParams.get(queryParam);
+  if (overrideValue != null) {
+    return overrideValue;
+  }
+
+  const currentStoredValue = sessionStorage.getItem(queryParam);
+  if (currentStoredValue != null) {
+    return currentStoredValue;
+  }
+
+  const randomString = Math.random().toString(36).slice(2, 10);
+  sessionStorage.setItem(queryParam, randomString);
+  return randomString;
+}
+
 export async function handleDiscordAuthentication() {
-  const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
+  const discordSdk = await getDiscordSdk();
 
   try {
     const auth = await setupDiscordSdk(discordSdk);
@@ -31,7 +104,7 @@ export async function handleDiscordAuthentication() {
   }
 }
 
-async function setupDiscordSdk(discordSdk: DiscordSDK) {
+async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
   await discordSdk.ready();
 
   // Authorize with Discord Client
@@ -49,16 +122,7 @@ async function setupDiscordSdk(discordSdk: DiscordSDK) {
   });
 
   // Retrieve an access_token from your activity's server
-  const response = await fetch("/api/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      code,
-    }),
-  });
-  const { access_token } = await response.json();
+  const { access_token } = await getAccessToken(code);
 
   // Authenticate with Discord client (using the access_token)
   const auth = await discordSdk.commands.authenticate({
@@ -69,27 +133,65 @@ async function setupDiscordSdk(discordSdk: DiscordSDK) {
   return auth;
 }
 
-export async function getUserGuilds(access_token: string) {
-  const response = await fetch(`${RouteBases.api}/users/@me/guilds`, {
-    headers: {
-      Authorization: `Bearer ${access_token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  return (await response.json()) as RESTAPIPartialCurrentUserGuild[];
+export async function getAccessToken(code: string) {
+  if (isEmbedded) {
+    const response = await fetch("/api/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        code,
+      }),
+    });
+    return (await response.json()) as { access_token: string };
+  }
+
+  return { access_token: "mock_token" };
+}
+
+export async function getUserGuilds(
+  discordSdk: DiscordSDK | DiscordSDKMock,
+  access_token: string,
+): Promise<RESTAPIPartialCurrentUserGuild[]> {
+  if (isEmbedded) {
+    const response = await fetch(`${RouteBases.api}/users/@me/guilds`, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return await response.json();
+  }
+
+  // Mock responses
+  if (discordSdk.guildId) {
+    return [
+      {
+        id: discordSdk.guildId,
+        name: "Mock server",
+        icon: null,
+        owner: true,
+        features: [],
+        permissions: String(PermissionFlagsBits.Administrator),
+      },
+    ];
+  }
+  return [];
 }
 
 export async function getVoiceGuild(
-  discordSdk: DiscordSDK,
+  discordSdk: DiscordSDK | DiscordSDKMock,
   access_token: string,
 ) {
   if (!discordSdk.guildId) return null;
 
-  const guilds = await getUserGuilds(access_token);
+  const guilds = await getUserGuilds(discordSdk, access_token);
   return guilds.find((g) => g.id === discordSdk.guildId);
 }
 
-export async function getVoiceChannel(discordSdk: DiscordSDK) {
+export async function getVoiceChannel(discordSdk: DiscordSDK | DiscordSDKMock) {
   if (!discordSdk.channelId || !discordSdk.guildId) return null;
 
   return await discordSdk.commands.getChannel({
@@ -98,19 +200,34 @@ export async function getVoiceChannel(discordSdk: DiscordSDK) {
 }
 
 export async function getVoiceMember(
-  discordSdk: DiscordSDK,
+  discordSdk: DiscordSDK | DiscordSDKMock,
   access_token: string,
-) {
+): Promise<RESTPatchAPIGuildMemberResult | null> {
   if (!discordSdk.guildId) return null;
 
-  const response = await fetch(
-    `${RouteBases.api}/users/@me/guilds/${discordSdk.guildId}/member`,
-    {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        "Content-Type": "application/json",
+  if (isEmbedded) {
+    const response = await fetch(
+      `${RouteBases.api}/users/@me/guilds/${discordSdk.guildId}/member`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
       },
-    },
-  );
-  return (await response.json()) as RESTPatchAPIGuildMemberResult;
+    );
+    return await response.json();
+  }
+
+  return {
+    nick: null,
+    avatar: null,
+    roles: [],
+    joined_at: "0",
+    premium_since: null,
+    deaf: false,
+    mute: false,
+    flags: 0 << 0,
+    pending: false,
+    communication_disabled_until: null,
+  };
 }

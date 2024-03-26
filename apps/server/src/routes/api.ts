@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
 router.post("/token", async (req, res) => {
   const body = await req.json();
 
-  const response = await fetch(`https://discord.com/api/oauth2/token`, {
+  const response = await fetch("https://discord.com/api/oauth2/token", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -25,8 +25,8 @@ router.post("/token", async (req, res) => {
     }),
   });
 
-  const { access_token } = await response.json();
-  if (!access_token) return res.sendStatus(403);
+  const { error, error_description, access_token } = await response.json();
+  if (!access_token) return res.status(403).json({ error, error_description });
 
   res.json({ access_token });
 });
