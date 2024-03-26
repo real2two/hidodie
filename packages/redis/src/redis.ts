@@ -9,3 +9,7 @@ export const redis = new Redis({
   db: env.RedisDatabase,
   enableOfflineQueue: false,
 });
+
+redis.on("error", (err) => {
+  console.error(err);
+});
