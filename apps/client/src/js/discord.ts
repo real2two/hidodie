@@ -10,6 +10,8 @@ import {
   PermissionFlagsBits,
 } from "discord-api-types/v10";
 
+import { getAccessToken } from "./server";
+
 const queryParams = new URLSearchParams(window.location.search);
 const isEmbedded = queryParams.get("frame_id") != null;
 
@@ -128,7 +130,9 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
   });
 
   // Retrieve an access_token from your activity's server
-  const { access_token } = await getAccessToken(code);
+  const { access_token } = isEmbedded
+    ? await getAccessToken(code)
+    : { access_token: "mock_token" };
 
   // Authenticate with Discord client (using the access_token)
   const auth = await discordSdk.commands.authenticate({
@@ -137,23 +141,6 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
 
   if (!auth) throw new Error("Authenticate command failed");
   return auth;
-}
-
-export async function getAccessToken(code: string) {
-  if (isEmbedded) {
-    const response = await fetch("/api/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        code,
-      }),
-    });
-    return (await response.json()) as { access_token: string };
-  }
-
-  return { access_token: "mock_token" };
 }
 
 export async function getUserGuilds(

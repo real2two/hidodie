@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "35350091-1e5f-4859-9cf7-c98c2135fc53",
+  "id": "8824f154-e972-44a2-8558-ef326f5da79d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "rooms": {
@@ -18,26 +18,12 @@
           "name": "server_id",
           "type": "varchar(32)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "rooms_server_id_servers_id_fk": {
-          "name": "rooms_server_id_servers_id_fk",
-          "tableFrom": "rooms",
-          "tableTo": "servers",
-          "columnsFrom": [
-            "server_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {
         "rooms_id": {
           "name": "rooms_id",
@@ -53,23 +39,30 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(32)",
+          "type": "varchar(36)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "fqdn": {
-          "name": "fqdn",
-          "type": "varchar(255)",
+        "connection": {
+          "name": "connection",
+          "type": "varchar(2048)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "discord_url_mapping": {
           "name": "discord_url_mapping",
           "type": "varchar(2048)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "max_rooms": {
+          "name": "max_rooms",
+          "type": "int unsigned",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         }
       },

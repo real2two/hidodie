@@ -48,12 +48,18 @@ importers:
 
   apps/server:
     dependencies:
+      '@/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@/env':
         specifier: workspace:*
         version: link:../../packages/env
       discord-api-types:
         specifier: ^0.37.76
         version: 0.37.76
+      drizzle-orm:
+        specifier: ^0.30.4
+        version: 0.30.4(mysql2@3.9.2)
       hyper-express:
         specifier: ^6.14.12
         version: 6.14.12
