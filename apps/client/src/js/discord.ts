@@ -99,6 +99,8 @@ export async function handleDiscordAuthentication() {
       member: await getActivityMember(discordSdk, auth.access_token),
       guild: await getActivityGuild(discordSdk, auth.access_token),
       channel: await getActivityChannel(discordSdk),
+
+      close: discordSdk.close,
     };
   } catch (err) {
     console.error(err);

@@ -1,3 +1,4 @@
+import { RPCCloseCodes } from "@discord/embedded-app-sdk";
 import { handleDiscordAuthentication } from "./discord";
 
 export async function handleDiscordSdk() {
@@ -17,6 +18,13 @@ export async function handleDiscordSdk() {
       secrets: {},
     },
   });
+
+  window.onbeforeunload = () => {
+    sdk.close(
+      RPCCloseCodes.TOKEN_REVOKED,
+      "Refreshed browser",
+    );
+  }
 
   return sdk;
 }

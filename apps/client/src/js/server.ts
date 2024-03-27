@@ -25,5 +25,6 @@ export async function requestRoom(instanceId: string) {
       };
     };
   };
+
   return room;
 }
