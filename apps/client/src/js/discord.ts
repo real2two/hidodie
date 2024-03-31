@@ -5,11 +5,12 @@ import {
 } from "@discord/embedded-app-sdk";
 import {
   RouteBases,
-  RESTAPIPartialCurrentUserGuild,
-  RESTPatchAPIGuildMemberResult,
   PermissionFlagsBits,
+  type RESTAPIPartialCurrentUserGuild,
+  type RESTPatchAPIGuildMemberResult,
 } from "discord-api-types/v10";
 
+import { requiredScopes } from "@/constants";
 import { getAccessToken } from "./server";
 
 const queryParams = new URLSearchParams(window.location.search);
@@ -90,9 +91,15 @@ export async function handleDiscordAuthentication() {
   const discordSdk = await getDiscordSdk();
 
   try {
-    const auth = await setupDiscordSdk(discordSdk);
+    const { gameToken, auth } = await setupDiscordSdk(discordSdk);
+    const mock = discordSdk instanceof DiscordSDKMock;
     return {
       ...discordSdk,
+
+      mock,
+      game: {
+        token: gameToken,
+      },
 
       user: auth.user,
       locale: (await discordSdk.commands.userSettingsGetLocale()).locale,
@@ -100,7 +107,10 @@ export async function handleDiscordAuthentication() {
       guild: await getActivityGuild(discordSdk, auth.access_token),
       channel: await getActivityChannel(discordSdk),
 
-      close: discordSdk.close,
+      close: mock
+        ? (code: RPCCloseCodes, message: string) =>
+            alert(`Error ${code}: ${message}`)
+        : discordSdk.close,
     };
   } catch (err) {
     console.error(err);
@@ -123,18 +133,13 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
     response_type: "code",
     state: "",
     prompt: "none",
-    scope: [
-      "identify",
-      "guilds",
-      "guilds.members.read",
-      "rpc.activities.write",
-    ],
+    scope: requiredScopes,
   });
 
   // Retrieve an access_token from your activity's server
-  const { access_token } = isEmbedded
+  const { game_token, access_token } = isEmbedded
     ? await getAccessToken(code)
-    : { access_token: "mock_token" };
+    : { game_token: "mock_jwt", access_token: "mock_token" };
 
   // Authenticate with Discord client (using the access_token)
   const auth = await discordSdk.commands.authenticate({
@@ -142,7 +147,10 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
   });
 
   if (!auth) throw new Error("Authenticate command failed");
-  return auth;
+  return {
+    gameToken: game_token,
+    auth,
+  };
 }
 
 export async function getUserGuilds(

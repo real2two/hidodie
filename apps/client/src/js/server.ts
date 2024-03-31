@@ -1,3 +1,5 @@
+import { ServerApiRoom, ServerApiError } from "../types";
+
 export async function getAccessToken(code: string) {
   const response = await fetch("/api/oauth2/token", {
     method: "POST",
@@ -8,7 +10,11 @@ export async function getAccessToken(code: string) {
       code,
     }),
   });
-  return (await response.json()) as { access_token: string };
+
+  return (await response.json()) as {
+    game_token: string;
+    access_token: string;
+  };
 }
 
 export async function requestRoom(instanceId: string) {
@@ -16,15 +22,5 @@ export async function requestRoom(instanceId: string) {
     `/api/room?instance_id=${encodeURIComponent(instanceId)}`,
   );
 
-  const { room } = (await response.json()) as {
-    room: {
-      id: string;
-      server: {
-        main: string;
-        discord: string;
-      };
-    };
-  };
-
-  return room;
+  return (await response.json()) as ServerApiRoom & ServerApiError;
 }

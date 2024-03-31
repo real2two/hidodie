@@ -28,17 +28,20 @@
     "ext": "ts, js"
   },
   "dependencies": {
+    "@/constants": "workspace:*",
     "@/db": "workspace:*",
     "@/env": "workspace:*",
     "discord-api-types": "^0.37.76",
     "drizzle-orm": "^0.30.4",
     "hyper-express": "^6.14.12",
+    "jsonwebtoken": "^9.0.2",
     "tsx": "^4.7.0",
     "typescript": "^5.4.3"
   },
   "devDependencies": {
     "@/eslint-config": "workspace:*",
     "@/tsconfig": "workspace:*",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.11.30",
     "eslint": "^8.57.0",
     "nodemon": "^3.1.0"

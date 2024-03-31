@@ -1,3 +1,4 @@
+import { RPCCloseCodes } from "@discord/embedded-app-sdk";
 import "../css/style.css";
 
 import { handleDiscordSdk } from "./sdk";
@@ -13,6 +14,12 @@ async function main() {
   const { locale, guildId, channelId, instanceId } = sdk;
 
   const room = await requestRoom(instanceId);
+  if (room.error) {
+    return sdk.close(
+      RPCCloseCodes.CLOSE_ABNORMAL,
+      room.error_description || room.error,
+    );
+  }
 
   document.querySelector("#app")!.innerHTML =
     `<p>Username: ${username}</p>` +
