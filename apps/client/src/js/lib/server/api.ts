@@ -17,9 +17,12 @@ export async function getAccessToken(code: string) {
   };
 }
 
-export async function requestRoom(instanceId: string) {
+export async function requestRoom(
+  connectionType: "default" | "discord",
+  instanceId: string,
+) {
   const response = await fetch(
-    `/api/room?instance_id=${encodeURIComponent(instanceId)}`,
+    `/api/room?connection_type=${connectionType}&instance_id=${encodeURIComponent(instanceId)}`,
   );
 
   return (await response.json()) as ServerApiRoom & ServerApiError;

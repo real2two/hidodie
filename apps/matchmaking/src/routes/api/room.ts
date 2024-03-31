@@ -1,3 +1,4 @@
+import env from "@/env";
 import HyperExpress from "hyper-express";
 
 import { eq, sql } from "drizzle-orm";
@@ -7,7 +8,29 @@ export const router = new HyperExpress.Router();
 
 router.get("/", async (req, res) => {
   // Get the instance ID
-  const { instance_id: instanceId } = req.query_parameters;
+  const { connection_type: connectionType, instance_id: instanceId } =
+    req.query_parameters as {
+      connection_type: "default" | "discord";
+      instance_id: string;
+    };
+
+  if (env.NodeEnv === "production") {
+    if (connectionType !== "discord") {
+      return res.status(500).json({
+        error: "invalid_connection_type",
+        error_description: "connection_type must be 'discord'",
+      });
+    }
+  } else {
+    if (!["default", "discord"].includes(connectionType)) {
+      return res.status(500).json({
+        error: "invalid_connection_type",
+        error_description:
+          "connection_type must be either 'default' or 'discord'",
+      });
+    }
+  }
+
   if (typeof instanceId !== "string") {
     return res.status(500).json({
       error: "missing_instance_id",
@@ -34,12 +57,15 @@ router.get("/", async (req, res) => {
       .where(eq(schema.rooms.roomId, roomId))
       .limit(1)
   )?.[0];
+
   if (room) {
     return res.json({
       room: {
         id: roomId,
-        connection: room.connection,
-        discordUrlMapping: room.discordUrlMapping,
+        connection:
+          connectionType === "default"
+            ? room.connection
+            : room.discordUrlMapping,
       },
     });
   }
@@ -72,8 +98,10 @@ router.get("/", async (req, res) => {
     return res.json({
       room: {
         id: roomId,
-        connection: server.connection,
-        discordUrlMapping: server.discordUrlMapping,
+        connection:
+          connectionType === "default"
+            ? server.connection
+            : server.discordUrlMapping,
       },
     });
   }

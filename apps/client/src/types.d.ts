@@ -1,10 +1,7 @@
 export interface ServerApiRoom {
   room: {
     id: string;
-    server: {
-      main: string;
-      discord: string;
-    };
+    connection: string;
   };
 }
 
