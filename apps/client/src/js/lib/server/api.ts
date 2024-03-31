@@ -1,4 +1,4 @@
-import { ServerApiRoom, ServerApiError } from "../types";
+import { ServerApiRoom, ServerApiError } from "../../../types";
 
 export async function getAccessToken(code: string) {
   const response = await fetch("/api/oauth2/token", {

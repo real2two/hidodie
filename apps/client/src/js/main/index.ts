@@ -1,8 +1,8 @@
 import { RPCCloseCodes } from "@discord/embedded-app-sdk";
-import "../css/style.css";
+import "../../css/style.css";
 
-import { handleDiscordSdk } from "./sdk";
-import { requestRoom } from "./server";
+import { handleDiscordSdk } from "../lib/discord/sdk";
+import { requestRoom } from "../lib/server/api";
 
 main();
 

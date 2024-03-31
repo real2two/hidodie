@@ -11,7 +11,7 @@ import {
 } from "discord-api-types/v10";
 
 import { requiredScopes } from "@/constants";
-import { getAccessToken } from "./server";
+import { getAccessToken } from "../server/api";
 
 const queryParams = new URLSearchParams(window.location.search);
 const isEmbedded = queryParams.get("frame_id") != null;
