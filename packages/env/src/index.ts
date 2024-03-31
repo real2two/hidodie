@@ -1,8 +1,10 @@
 export default {
   NodeEnv: process.env["NODE_ENV"] as "production" | "development",
+  
+  MatchmakingServerClusters: parseInt(process.env["MATCHMAKINGSERVER_CLUSTERS"]!) || 0,
+  MatchmakingServerPort: parseInt(process.env["MATCHMAKINGSERVER_PORT"]!) || 3001,
 
-  ServerClusters: parseInt(process.env["SERVER_CLUSTERS"]!) || 0,
-  ServerPort: parseInt(process.env["SERVER_PORT"]!) || 3001,
+  TestingServerPort: parseInt(process.env["TESTINGSERVER_PORT"]!) || 3002,
 
   VitePort: parseInt(process.env["VITE_PORT"]!) || 5173,
   ViteProxyTarget: process.env["VITE_PROXY_TARGET"] ?? "http://localhost:3001",

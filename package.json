@@ -9,7 +9,7 @@
   "scripts": {
     "build": "turbo build",
     "dev": "dotenv -- turbo run dev",
-    "start": "dotenv -- turbo run start",
+    "start": "dotenv -- turbo run start --filter=client --filter matchmaking",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md}\"",
     "schema/push": "cd packages/db && pnpm schema/push",

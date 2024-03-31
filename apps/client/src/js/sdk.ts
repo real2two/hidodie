@@ -20,11 +20,8 @@ export async function handleDiscordSdk() {
   });
 
   window.onbeforeunload = () => {
-    sdk.close(
-      RPCCloseCodes.TOKEN_REVOKED,
-      "Refreshed browser",
-    );
-  }
+    sdk.close(RPCCloseCodes.TOKEN_REVOKED, "Game updated");
+  };
 
   return sdk;
 }

@@ -17,7 +17,7 @@ cluster.on("exit", (worker) => {
 
 // Spawn in clusters.
 
-const clusterCount = env.ServerClusters || cpus().length;
+const clusterCount = env.MatchmakingServerClusters || cpus().length;
 for (let i = 0; i < clusterCount; i++) {
   createCluster();
 }
