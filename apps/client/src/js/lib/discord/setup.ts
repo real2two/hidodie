@@ -29,10 +29,14 @@ export async function handleDiscordSdk() {
   // Get username and instance ID of the player
   const username =
     sdk.member?.nick || sdk.user.global_name || sdk.user.username;
-  const { instanceId } = sdk;
+  const { instanceId, server } = sdk;
 
   // Request a room based off the instance ID
-  const room = await requestRoom(sdk.mock ? "default" : "discord", instanceId);
+  const room = await requestRoom(
+    sdk.mock ? "default" : "discord",
+    instanceId,
+    server.token,
+  );
   if (room.error) {
     throw sdk.close(
       RPCCloseCodes.CLOSE_ABNORMAL,
@@ -40,10 +44,11 @@ export async function handleDiscordSdk() {
     );
   }
 
-  // Return the sdk, username and the room
+  // Return the SDK, username and the room
   return {
     sdk,
     username,
-    room,
+    room: room.room,
+    server,
   };
 }

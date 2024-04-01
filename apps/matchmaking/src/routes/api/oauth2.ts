@@ -1,7 +1,7 @@
 import env from "@/env";
 import HyperExpress from "hyper-express";
 import jwt from "jsonwebtoken";
-import { requiredScopes } from "@/constants";
+import { requiredScopes } from "@/utils";
 import {
   RESTGetAPICurrentUserResult,
   RESTPostOAuth2AccessTokenResult,

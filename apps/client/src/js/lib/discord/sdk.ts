@@ -10,7 +10,7 @@ import {
   type RESTPatchAPIGuildMemberResult,
 } from "discord-api-types/v10";
 
-import { requiredScopes } from "@/constants";
+import { requiredScopes } from "@/utils";
 import { getAccessToken } from "../server/api";
 
 const queryParams = new URLSearchParams(window.location.search);
@@ -97,7 +97,7 @@ export async function handleDiscordAuthentication() {
       ...discordSdk,
 
       mock,
-      game: {
+      server: {
         token: gameToken,
       },
 

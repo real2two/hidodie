@@ -30,9 +30,6 @@ importers:
         specifier: ^0.37.76
         version: 0.37.76
     devDependencies:
-      '@/constants':
-        specifier: workspace:*
-        version: link:../../packages/constants
       '@/env':
         specifier: workspace:*
         version: link:../../packages/env
@@ -42,6 +39,9 @@ importers:
       '@/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
+      '@/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       typescript:
         specifier: ^5.2.2
         version: 5.4.3
@@ -51,15 +51,15 @@ importers:
 
   apps/matchmaking:
     dependencies:
-      '@/constants':
-        specifier: workspace:*
-        version: link:../../packages/constants
       '@/db':
         specifier: workspace:*
         version: link:../../packages/db
       '@/env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       discord-api-types:
         specifier: ^0.37.76
         version: 0.37.76
@@ -106,6 +106,9 @@ importers:
       '@/env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       discord-api-types:
         specifier: ^0.37.76
         version: 0.37.76
@@ -137,22 +140,6 @@ importers:
       nodemon:
         specifier: ^3.1.0
         version: 3.1.0
-
-  packages/constants:
-    dependencies:
-      '@discord/embedded-app-sdk':
-        specifier: ^1.0.2
-        version: 1.0.2
-    devDependencies:
-      '@/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@/tsconfig':
-        specifier: workspace:*
-        version: link:../tsconfig
-      eslint:
-        specifier: ^8.57.0
-        version: 8.57.0
 
   packages/db:
     dependencies:
@@ -213,6 +200,22 @@ importers:
         version: 1.13.0(eslint@8.57.0)
 
   packages/tsconfig: {}
+
+  packages/utils:
+    dependencies:
+      '@discord/embedded-app-sdk':
+        specifier: ^1.0.2
+        version: 1.0.2
+    devDependencies:
+      '@/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
 
 packages:
 

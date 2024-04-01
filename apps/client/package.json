@@ -20,7 +20,7 @@
     "@/env": "workspace:*",
     "@/eslint-config": "workspace:*",
     "@/tsconfig": "workspace:*",
-    "@/constants": "workspace:*",
+    "@/utils": "workspace:*",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
   },

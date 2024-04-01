@@ -28,3 +28,8 @@ pnpm schema/migrate # Migrate the schema (use this to update the database in pro
 
 pnpm cloudflared # For testing
 ```
+
+## Notes
+
+- The maximum amount of players a room can theoretically support is 256 players.
+- Do not put anything sensitive in `@/utils`, because it'll be visible frontend.

@@ -30,6 +30,7 @@
   "dependencies": {
     "@/db": "workspace:*",
     "@/env": "workspace:*",
+    "@/utils": "workspace:*",
     "discord-api-types": "^0.37.76",
     "drizzle-orm": "^0.30.4",
     "hyper-express": "^6.14.12",

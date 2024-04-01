@@ -1,6 +1,6 @@
 import env from "@/env";
 import HyperExpress from "hyper-express";
-
+import jwt from "jsonwebtoken";
 import { eq, sql } from "drizzle-orm";
 import { db, schema } from "@/db";
 
@@ -8,11 +8,15 @@ export const router = new HyperExpress.Router();
 
 router.get("/", async (req, res) => {
   // Get the instance ID
-  const { connection_type: connectionType, instance_id: instanceId } =
-    req.query_parameters as {
-      connection_type: "default" | "discord";
-      instance_id: string;
-    };
+  const {
+    connection_type: connectionType,
+    instance_id: instanceId,
+    game_token: gameToken,
+  } = req.query_parameters as {
+    connection_type: "default" | "discord";
+    instance_id: string;
+    game_token: string;
+  };
 
   if (env.NodeEnv === "production") {
     if (connectionType !== "discord") {
@@ -36,6 +40,27 @@ router.get("/", async (req, res) => {
       error: "missing_instance_id",
       error_description: "instance_id must be provided",
     });
+  }
+
+  if (typeof gameToken !== "string") {
+    return res.status(500).json({
+      error: "missing_game_token",
+      error_description: "game_token must be provided",
+    });
+  }
+
+  let userId: string | null = null;
+  if (env.NodeEnv === "production" || gameToken !== "mock_jwt") {
+    try {
+      const decoded = jwt.verify(gameToken, env.JWTSecret) as { id: string };
+      userId = decoded.id;
+    } catch (err) {
+      console.error(err);
+      return res.status(403).json({
+        error: "invalid_game_token",
+        error_description: "The provided game_token was invalid",
+      });
+    }
   }
 
   // Instance validation

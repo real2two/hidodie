@@ -8,6 +8,13 @@ export default ({ mode }) => {
     server: {
       port: parseInt(process.env["VITE_PORT"]!) ?? 5173,
       proxy: {
+        "/api/server/local": {
+          target: "http://localhost:3002",
+          changeOrigin: true,
+          secure: false,
+          ws: true,
+          rewrite: (path) => path.slice("/api/server/local/".length),
+        },
         "/api": {
           target: process.env["VITE_PROXY_TARGET"] || "http://localhost:3001",
           changeOrigin: true,

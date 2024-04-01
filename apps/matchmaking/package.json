@@ -28,7 +28,7 @@
     "ext": "ts, js"
   },
   "dependencies": {
-    "@/constants": "workspace:*",
+    "@/utils": "workspace:*",
     "@/db": "workspace:*",
     "@/env": "workspace:*",
     "discord-api-types": "^0.37.76",
