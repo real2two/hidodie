@@ -1,36 +1,36 @@
 import {
-  GamePlayerKeyPresses,
-  GamePlayerDirectionValues,
-  type GamePlayerDirections,
+  MovementKeyPresses,
+  MovementDirectionValues,
+  type MovementDirections,
 } from "./game";
 
-export function getDirectionValue(dir: GamePlayerDirections) {
-  let direction = GamePlayerKeyPresses.NONE;
-  if (dir.x === -1) direction = GamePlayerKeyPresses.LEFT;
-  if (dir.x === 1) direction = GamePlayerKeyPresses.RIGHT;
+export function getDirectionValue(dir: MovementDirections) {
+  let direction = MovementKeyPresses.NONE;
+  if (dir.x === -1) direction = MovementKeyPresses.LEFT;
+  if (dir.x === 1) direction = MovementKeyPresses.RIGHT;
   if (dir.y === -1) {
     switch (direction) {
-      case GamePlayerKeyPresses.NONE:
-        direction = GamePlayerKeyPresses.UP;
+      case MovementKeyPresses.NONE:
+        direction = MovementKeyPresses.UP;
         break;
-      case GamePlayerKeyPresses.LEFT:
-        direction = GamePlayerKeyPresses.LEFT_UP;
+      case MovementKeyPresses.LEFT:
+        direction = MovementKeyPresses.LEFT_UP;
         break;
-      case GamePlayerKeyPresses.RIGHT:
-        direction = GamePlayerKeyPresses.RIGHT_UP;
+      case MovementKeyPresses.RIGHT:
+        direction = MovementKeyPresses.RIGHT_UP;
         break;
     }
   }
   if (dir.y === 1) {
     switch (direction) {
-      case GamePlayerKeyPresses.NONE:
-        direction = GamePlayerKeyPresses.DOWN;
+      case MovementKeyPresses.NONE:
+        direction = MovementKeyPresses.DOWN;
         break;
-      case GamePlayerKeyPresses.LEFT:
-        direction = GamePlayerKeyPresses.LEFT_DOWN;
+      case MovementKeyPresses.LEFT:
+        direction = MovementKeyPresses.LEFT_DOWN;
         break;
-      case GamePlayerKeyPresses.RIGHT:
-        direction = GamePlayerKeyPresses.RIGHT_DOWN;
+      case MovementKeyPresses.RIGHT:
+        direction = MovementKeyPresses.RIGHT_DOWN;
         break;
     }
   }
@@ -38,34 +38,34 @@ export function getDirectionValue(dir: GamePlayerDirections) {
 }
 
 export function getDirection(
-  directionValue: GamePlayerKeyPresses,
-): GamePlayerDirections {
+  directionValue: MovementKeyPresses,
+): MovementDirections {
   const isMovingLeft = [
-    GamePlayerKeyPresses.LEFT,
-    GamePlayerKeyPresses.LEFT_DOWN,
-    GamePlayerKeyPresses.LEFT_UP,
+    MovementKeyPresses.LEFT,
+    MovementKeyPresses.LEFT_DOWN,
+    MovementKeyPresses.LEFT_UP,
   ].includes(directionValue);
 
   const isMovingUp = [
-    GamePlayerKeyPresses.UP,
-    GamePlayerKeyPresses.LEFT_UP,
-    GamePlayerKeyPresses.RIGHT_UP,
+    MovementKeyPresses.UP,
+    MovementKeyPresses.LEFT_UP,
+    MovementKeyPresses.RIGHT_UP,
   ].includes(directionValue);
 
   const isMovingDown = [
-    GamePlayerKeyPresses.DOWN,
-    GamePlayerKeyPresses.LEFT_DOWN,
-    GamePlayerKeyPresses.RIGHT_DOWN,
+    MovementKeyPresses.DOWN,
+    MovementKeyPresses.LEFT_DOWN,
+    MovementKeyPresses.RIGHT_DOWN,
   ].includes(directionValue);
 
   const isMovingRight = [
-    GamePlayerKeyPresses.RIGHT,
-    GamePlayerKeyPresses.RIGHT_DOWN,
-    GamePlayerKeyPresses.RIGHT_UP,
+    MovementKeyPresses.RIGHT,
+    MovementKeyPresses.RIGHT_DOWN,
+    MovementKeyPresses.RIGHT_UP,
   ].includes(directionValue);
 
   return {
-    x: (isMovingLeft ? -1 : isMovingRight ? 1 : 0) as GamePlayerDirectionValues,
-    y: (isMovingUp ? -1 : isMovingDown ? 1 : 0) as GamePlayerDirectionValues,
+    x: (isMovingLeft ? -1 : isMovingRight ? 1 : 0) as MovementDirectionValues,
+    y: (isMovingUp ? -1 : isMovingDown ? 1 : 0) as MovementDirectionValues,
   };
 }

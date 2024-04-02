@@ -1,4 +1,4 @@
-export enum GamePlayerKeyPresses {
+export enum MovementKeyPresses {
   NONE = 0,
 
   LEFT = 1,
@@ -13,8 +13,13 @@ export enum GamePlayerKeyPresses {
   RIGHT_DOWN = 8,
 }
 
-export type GamePlayerDirectionValues = -1 | 0 | 1;
-export type GamePlayerDirections = {
-  x: GamePlayerDirectionValues;
-  y: GamePlayerDirectionValues;
+export type MovementDirectionValues = -1 | 0 | 1;
+export type MovementDirections = {
+  x: MovementDirectionValues;
+  y: MovementDirectionValues;
 };
+
+export interface Player {
+  id: number;
+  username: string;
+}

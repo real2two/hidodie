@@ -2,8 +2,10 @@ import "../../css/style.css";
 
 import { RPCCloseCodes } from "@discord/embedded-app-sdk";
 import {
+  sanitizeHtml,
   ServerWebSocketReceiveTypes,
   ServerWebSocketTransmitTypes,
+  type Player,
 } from "@/utils";
 import { handleDiscordSdk } from "../lib/discord/setup";
 import { handleRoom } from "../lib/server/websocket";
@@ -12,6 +14,8 @@ main();
 
 async function main() {
   const { sdk, username, room, server } = await handleDiscordSdk();
+
+  const players: Player[] = [];
   const { success } = await handleRoom({
     connection: room.connection,
     roomId: room.id,
@@ -33,9 +37,31 @@ async function main() {
     onMessage: ({ message, reply }) => {
       console.debug("Message recieved", message);
 
-      if (message.type === ServerWebSocketReceiveTypes.RecieveChatMessage) {
-        document.querySelector("#app")!.innerHTML +=
-          `<p>${message.message} (not sanitized)</p>`;
+      const app = document.querySelector("#app")!;
+      switch (message.type) {
+        case ServerWebSocketReceiveTypes.PlayerJoined:
+          // Update player values
+          const existingPlayer = players.find((p) => p.id === message.player);
+          if (existingPlayer) {
+            existingPlayer.username = message.username;
+          } else {
+            players.push({
+              id: message.player,
+              username: message.username,
+            });
+          }
+
+          // Send join message
+          if (!message.hidden) {
+            app.innerHTML += `<p>${sanitizeHtml(message.username)} joined the server</p>`;
+          }
+          break;
+        case ServerWebSocketReceiveTypes.PlayerLeft:
+          app.innerHTML += `<p>${sanitizeHtml(players.find((p) => p.id === message.player)?.username!)} left the server</p>`;
+          break;
+        case ServerWebSocketReceiveTypes.RecieveChatMessage:
+          app.innerHTML += `<p>${sanitizeHtml(players.find((p) => p.id === message.player)?.username!)}: ${sanitizeHtml(message.message)}</p>`;
+          break;
       }
     },
     onClose: () => {
