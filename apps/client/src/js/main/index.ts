@@ -1,7 +1,10 @@
 import "../../css/style.css";
 
 import { RPCCloseCodes } from "@discord/embedded-app-sdk";
-import { ServerWebSocketTransmitTypes } from "@/utils";
+import {
+  ServerWebSocketReceiveTypes,
+  ServerWebSocketTransmitTypes,
+} from "@/utils";
 import { handleDiscordSdk } from "../lib/discord/setup";
 import { handleRoom } from "../lib/server/websocket";
 
@@ -13,6 +16,7 @@ async function main() {
     connection: room.connection,
     roomId: room.id,
     gameToken: server.token,
+    username: username,
     onOpen: ({ reply }) => {
       console.debug("Connected");
 
@@ -20,9 +24,19 @@ async function main() {
       reply({
         type: ServerWebSocketTransmitTypes.Ping,
       });
+
+      reply({
+        type: ServerWebSocketTransmitTypes.SendChatMessage,
+        message: "This is a test",
+      });
     },
     onMessage: ({ message, reply }) => {
       console.debug("Message recieved", message);
+
+      if (message.type === ServerWebSocketReceiveTypes.RecieveChatMessage) {
+        document.querySelector("#app")!.innerHTML +=
+          `<p>${message.message} (not sanitized)</p>`;
+      }
     },
     onClose: () => {
       console.debug("Disconnected");

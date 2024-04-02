@@ -118,6 +118,9 @@ importers:
       hyper-express:
         specifier: ^6.14.12
         version: 6.14.12
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.2
       tsx:
         specifier: ^4.7.0
         version: 4.7.1

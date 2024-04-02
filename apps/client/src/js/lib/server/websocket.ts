@@ -12,6 +12,7 @@ export async function handleRoom({
   connection,
   roomId,
   gameToken,
+  username,
   onOpen,
   onMessage,
   onClose,
@@ -19,6 +20,7 @@ export async function handleRoom({
   connection: string;
   roomId: string;
   gameToken: string;
+  username: string;
   onOpen: (opts: { reply: (data: ServerWebSocketTransmit) => void }) => unknown;
   onMessage: (opts: {
     message: ServerWebSocketReceive;
@@ -35,7 +37,7 @@ export async function handleRoom({
     connection === "localhost"
       ? "ws"
       : "wss";
-  const url = `${scheme}://${connectionUrl}/?room_id=${encodeURIComponent(roomId)}&game_token=${encodeURIComponent(gameToken)}`;
+  const url = `${scheme}://${connectionUrl}/?room_id=${encodeURIComponent(roomId)}&game_token=${encodeURIComponent(gameToken)}&username=${encodeURIComponent(username)}`;
 
   const ws = await connectToRoom(url);
   if (!ws) {
