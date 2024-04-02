@@ -6,9 +6,11 @@ export async function handleDiscordSdk() {
   const sdk = await handleDiscordAuthentication();
 
   // Close the activity on game updates
-  window.onbeforeunload = () => {
-    sdk.close(RPCCloseCodes.TOKEN_REVOKED, "Browser refreshed");
-  };
+  if (import.meta.env.VITE_ENABLE_REFRESHES?.toLowerCase() !== "true") {
+    window.onbeforeunload = () => {
+      sdk.close(RPCCloseCodes.TOKEN_REVOKED, "Browser refreshed");
+    };
+  }
 
   // Set activity on user's status
   sdk.commands.setActivity({

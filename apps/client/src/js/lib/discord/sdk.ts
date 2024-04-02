@@ -6,6 +6,7 @@ import {
 import {
   RouteBases,
   PermissionFlagsBits,
+  type APIGuildMember,
   type RESTAPIPartialCurrentUserGuild,
   type RESTPatchAPIGuildMemberResult,
 } from "discord-api-types/v10";
@@ -13,18 +14,26 @@ import {
 import { requiredScopes } from "@/utils";
 import { getAccessToken } from "../server/api";
 
+const enabledRefreshes =
+  import.meta.env.VITE_ENABLE_REFRESHES?.toLowerCase() === "true";
+
 const queryParams = new URLSearchParams(window.location.search);
 const isEmbedded = queryParams.get("frame_id") != null;
 
 export enum SessionStorageQueryParam {
+  sdkHack = "sdk_hack",
   userId = "user_id",
   guildId = "guild_id",
   channelId = "channel_id",
 }
 
 export async function getDiscordSdk() {
-  if (isEmbedded) return new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
+  if (isEmbedded)
+    return new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID) as DiscordSDK;
+  return createMockDiscordSdk();
+}
 
+export async function createMockDiscordSdk() {
   const mockUserId = getOverrideOrRandomSessionValue(
     SessionStorageQueryParam.userId,
   );
@@ -90,13 +99,56 @@ export function getOverrideOrRandomSessionValue(
 export async function handleDiscordAuthentication() {
   const discordSdk = await getDiscordSdk();
 
+  const mock = discordSdk instanceof DiscordSDKMock;
+  const close = mock
+    ? (code: RPCCloseCodes, message: string) =>
+        alert(`Error ${code}: ${message}`)
+    : discordSdk.close;
+
+  if (
+    // This checks if refreshes are enabled on .env
+    enabledRefreshes &&
+    // If this is in a iframe
+    isEmbedded &&
+    // @ts-ignore Checks if it's NOT the origin
+    !discordSdk.sourceOrigin.includes("discord.com")
+  ) {
+    // This is an instance loading after a browser refresh
+    const rawData = sessionStorage.getItem(SessionStorageQueryParam.sdkHack);
+    if (rawData) {
+      const data = JSON.parse(rawData);
+      return {
+        ...discordSdk,
+        mock,
+        close,
+
+        server: {
+          token: data.server.token as string,
+        },
+
+        user: data.user as Awaited<
+          ReturnType<typeof discordSdk.commands.authenticate>
+        >["user"],
+        locale: data.locale as string,
+        member: data.member as APIGuildMember,
+        guild: data.guild as RESTAPIPartialCurrentUserGuild,
+        channel: data.channel as Awaited<
+          ReturnType<typeof discordSdk.commands.getChannel>
+        >,
+      };
+    }
+
+    discordSdk.close(
+      RPCCloseCodes.TOKEN_REVOKED,
+      "Could not find refresh data",
+    );
+
+    throw new Error("Could not find refresh data");
+  }
+
   try {
     const { gameToken, auth } = await setupDiscordSdk(discordSdk);
-    const mock = discordSdk instanceof DiscordSDKMock;
-    return {
-      ...discordSdk,
-
-      mock,
+    const data = {
       server: {
         token: gameToken,
       },
@@ -106,11 +158,26 @@ export async function handleDiscordAuthentication() {
       member: await getActivityMember(discordSdk, auth.access_token),
       guild: await getActivityGuild(discordSdk, auth.access_token),
       channel: await getActivityChannel(discordSdk),
+    };
 
-      close: mock
-        ? (code: RPCCloseCodes, message: string) =>
-            alert(`Error ${code}: ${message}`)
-        : discordSdk.close,
+    if (
+      // This checks if refreshes are enabled on .env
+      enabledRefreshes &&
+      // If this is in a iframe
+      isEmbedded
+    ) {
+      sessionStorage.setItem(
+        SessionStorageQueryParam.sdkHack,
+        JSON.stringify(data),
+      );
+    }
+
+    return {
+      ...discordSdk,
+      mock,
+      close,
+
+      ...data,
     };
   } catch (err) {
     console.error(err);
