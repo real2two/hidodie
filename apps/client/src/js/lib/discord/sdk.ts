@@ -15,87 +15,16 @@ import {
 import { requiredScopes } from "@/utils";
 import { getAccessToken } from "../server/api";
 
-const enabledRefreshes =
-  import.meta.env.VITE_ENABLE_REFRESHES?.toLowerCase() === "true";
-
-const queryParams = new URLSearchParams(window.location.search);
-const isEmbedded = queryParams.get("frame_id") != null;
-
-export enum SessionStorageQueryParam {
-  sdkHack = "sdk_hack",
-  userId = "user_id",
-  guildId = "guild_id",
-  channelId = "channel_id",
-}
+import {
+  createMockDiscordSdk,
+  isViteProduction,
+  isEmbedded,
+  SessionStorageQueryParam,
+} from "./debug";
 
 export async function getDiscordSdk() {
-  if (isEmbedded) {
-    return new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID) as DiscordSDK;
-  }
-  return createMockDiscordSdk();
-}
-
-export async function createMockDiscordSdk() {
-  const mockUserId = getOverrideOrRandomSessionValue(
-    SessionStorageQueryParam.userId,
-  );
-  const mockGuildId = getOverrideOrRandomSessionValue(
-    SessionStorageQueryParam.guildId,
-  );
-  const mockChannelId = getOverrideOrRandomSessionValue(
-    SessionStorageQueryParam.channelId,
-  );
-
-  const discordSdk = new DiscordSDKMock(
-    import.meta.env.VITE_DISCORD_CLIENT_ID,
-    mockGuildId,
-    mockChannelId,
-  );
-  const discriminator = String(mockUserId.charCodeAt(0) % 5);
-
-  discordSdk._updateCommandMocks({
-    authenticate: async () => {
-      return {
-        access_token: "mock_token",
-        user: {
-          username: mockUserId,
-          discriminator,
-          id: mockUserId,
-          avatar: null,
-          public_flags: 1,
-        },
-        scopes: [],
-        expires: new Date(2112, 1, 1).toString(),
-        application: {
-          description: "mock_app_description",
-          icon: "mock_app_icon",
-          id: "mock_app_id",
-          name: "mock_app_name",
-        },
-      };
-    },
-    userSettingsGetLocale: async () => ({ locale: "en-US" }),
-  });
-
-  return discordSdk;
-}
-
-export function getOverrideOrRandomSessionValue(
-  queryParam: `${SessionStorageQueryParam}`,
-) {
-  const overrideValue = queryParams.get(queryParam);
-  if (overrideValue != null) {
-    return overrideValue;
-  }
-
-  const currentStoredValue = sessionStorage.getItem(queryParam);
-  if (currentStoredValue != null) {
-    return currentStoredValue;
-  }
-
-  const randomString = Math.random().toString(36).slice(2, 10);
-  sessionStorage.setItem(queryParam, randomString);
-  return randomString;
+  if (!isViteProduction && !isEmbedded) return createMockDiscordSdk();
+  return new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID) as DiscordSDK;
 }
 
 export async function handleDiscordAuthentication() {
@@ -108,8 +37,8 @@ export async function handleDiscordAuthentication() {
     : discordSdk.close;
 
   if (
-    // This checks if refreshes are enabled on .env
-    enabledRefreshes &&
+    // Refreshes are enabled when vite isn't 'production' on .env
+    !isViteProduction &&
     // If this is in a iframe
     isEmbedded &&
     // Checks the platform, because this breaks on mobile
@@ -165,8 +94,8 @@ export async function handleDiscordAuthentication() {
     };
 
     if (
-      // This checks if refreshes are enabled on .env
-      enabledRefreshes &&
+      // Refreshes are enabled when vite isn't 'production' on .env
+      !isViteProduction &&
       // If this is in a iframe
       isEmbedded
     ) {

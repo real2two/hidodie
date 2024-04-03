@@ -1,12 +1,13 @@
 import { RPCCloseCodes } from "@discord/embedded-app-sdk";
 import { handleDiscordAuthentication } from "./sdk";
 import { requestRoom } from "../server/api";
+import { isViteProduction } from "./debug";
 
 export async function handleDiscordSdk() {
   const sdk = await handleDiscordAuthentication();
 
   // Close the activity on game updates
-  if (import.meta.env.VITE_ENABLE_REFRESHES?.toLowerCase() !== "true") {
+  if (isViteProduction || sdk.platform === "mobile") {
     window.onbeforeunload = () => {
       sdk.close(RPCCloseCodes.TOKEN_REVOKED, "Browser refreshed");
     };
