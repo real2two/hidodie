@@ -17,6 +17,11 @@ body {
   margin: 0;
 }
 
+input {
+  color: rgba(255, 255, 255, 0.87);
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
 #app {
   width: 100%;
   height: 100%;
@@ -43,7 +48,6 @@ body {
 #chat-input {
   background-color: rgba(0, 0, 0, 0.1);
   border-color: transparent;
-  color: rgba(255, 255, 255, 0.87);
   border-radius: 0px;
   margin-top: 5px;
   padding: 7px;
