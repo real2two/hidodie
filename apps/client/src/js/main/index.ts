@@ -52,6 +52,10 @@ export async function setupGame({
       reply({
         type: ServerWebSocketTransmitTypes.Ping,
       });
+
+      window.onresize = () => {
+        htmlDocs.chatMessages.scrollTop = htmlDocs.chatMessages.scrollHeight;
+      };
     },
     onMessage: ({ message, reply }) => {
       console.debug("Message recieved", message);
