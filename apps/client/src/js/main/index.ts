@@ -19,14 +19,20 @@ import { addGameInputs } from "../lib/game/inputs";
 main();
 
 async function main() {
-  const { sdk, username, room, server } = await handleDiscordSdk();
+  const data = await handleDiscordSdk();
+  setupGame(data);
+}
 
+export async function setupGame({
+  sdk,
+  username,
+  room,
+  server,
+}: Awaited<ReturnType<typeof handleDiscordSdk>>) {
   document.querySelector("#app")!.innerHTML =
-    `<p>Username: ${username}</p>` +
-    `<p>Room: <code>${JSON.stringify(room)}</code></p>` +
+    `<canvas id="canvas"></canvas>` +
     `<div id="chat">` +
-    `<div id="chat-container">` +
-    `<div id="chat-messages"></div>` +
+    `<div id="chat-container"></div>` +
     `<input id="chat-input" maxlength="52">` +
     `</div>` +
     `</div>`;
@@ -92,6 +98,7 @@ async function main() {
     },
     onClose: () => {
       console.debug("Disconnected");
+      sdk.close(RPCCloseCodes.CLOSE_NORMAL, "Disconnected");
     },
   });
 

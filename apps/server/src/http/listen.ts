@@ -5,7 +5,7 @@ import {
   ServerWebSocketReceiveTypes,
 } from "@/utils";
 
-import { rooms, type Player } from "../lib/rooms";
+import { rooms, type Player, type Room } from "../lib/rooms";
 import { recieve, transmit } from "../lib/server";
 
 export const app = new HyperExpress.Server();
@@ -30,10 +30,16 @@ app.upgrade("/", (req, res) => {
   // TODO: Add a way to delete ghost rooms
   const room = rooms.get(roomId);
   if (!room) {
-    rooms.set(roomId, {
+    const newRoom: Room = {
       roomId,
       players: [],
-    });
+      broadcast: (buffer) => {
+        for (const p of newRoom.players) {
+          p.send(buffer);
+        }
+      },
+    };
+    rooms.set(roomId, newRoom);
   } else if (room.players.length >= 256) {
     return res.close();
   }
@@ -91,15 +97,13 @@ app.ws(
     room.players.push(player);
 
     // Send join
-    for (const p of room.players) {
-      p.send(
-        recieve[ServerWebSocketReceiveTypes.PlayerJoined]({
-          hidden: false,
-          player: player.id,
-          username: player.username,
-        }),
-      );
-    }
+    room.broadcast(
+      recieve[ServerWebSocketReceiveTypes.PlayerJoined]({
+        hidden: false,
+        player: player.id,
+        username: player.username,
+      }),
+    );
 
     console.log("A player has joined room:", roomId);
 
@@ -128,14 +132,12 @@ app.ws(
             );
             break;
           case ServerWebSocketTransmitTypes.SendChatMessage:
-            for (const p of room.players) {
-              p.send(
-                recieve[ServerWebSocketReceiveTypes.RecieveChatMessage]({
-                  player: player.id,
-                  message: transformed.message,
-                }),
-              );
-            }
+            room.broadcast(
+              recieve[ServerWebSocketReceiveTypes.RecieveChatMessage]({
+                player: player.id,
+                message: transformed.message,
+              }),
+            );
             break;
         }
       } catch (err) {
@@ -146,14 +148,12 @@ app.ws(
     ws.once("close", () => {
       console.log(`A player has disconnected`);
 
-      // RSend leave message
-      for (const p of room.players) {
-        p.send(
-          recieve[ServerWebSocketReceiveTypes.PlayerLeft]({
-            player: player.id,
-          }),
-        );
-      }
+      // Send leave message
+      room.broadcast(
+        recieve[ServerWebSocketReceiveTypes.PlayerLeft]({
+          player: player.id,
+        }),
+      );
 
       // Remove player
       room.players.splice(room.players.indexOf(player), 1);

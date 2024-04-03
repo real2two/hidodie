@@ -2,6 +2,7 @@ import {
   DiscordSDK,
   DiscordSDKMock,
   RPCCloseCodes,
+  Platform,
 } from "@discord/embedded-app-sdk";
 import {
   RouteBases,
@@ -28,8 +29,9 @@ export enum SessionStorageQueryParam {
 }
 
 export async function getDiscordSdk() {
-  if (isEmbedded)
+  if (isEmbedded) {
     return new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID) as DiscordSDK;
+  }
   return createMockDiscordSdk();
 }
 
@@ -110,6 +112,8 @@ export async function handleDiscordAuthentication() {
     enabledRefreshes &&
     // If this is in a iframe
     isEmbedded &&
+    // Checks the platform, because this breaks on mobile
+    discordSdk.platform === Platform.DESKTOP &&
     // @ts-ignore Checks if it's NOT the origin
     !discordSdk.sourceOrigin.includes("discord.com")
   ) {

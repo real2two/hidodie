@@ -22,7 +22,7 @@ body {
   height: 100%;
 }
 
-#chat-container {
+#chat {
   position: absolute;
   bottom: 0;
 
@@ -32,7 +32,7 @@ body {
   margin-bottom: 4vh;
 }
 
-#chat-messages {
+#chat-container {
   width: 50%;
   overflow-wrap: break-word;
   
@@ -43,6 +43,7 @@ body {
 #chat-input {
   background-color: rgba(0, 0, 0, 0.1);
   border-color: transparent;
+  color: rgba(255, 255, 255, 0.87);
   border-radius: 0px;
   margin-top: 5px;
   padding: 7px;

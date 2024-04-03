@@ -1,4 +1,4 @@
-import type { MovementDirectionValues } from "..";
+import type { MovementDirections } from "..";
 
 // Message types
 export enum ServerWebSocketReceiveTypes {
@@ -60,10 +60,7 @@ export interface ServerWebSocketReceiveSendChatMessage {
 // Movement
 export interface ServerWebSocketTransmitMovement {
   type: ServerWebSocketTransmitTypes.Movement;
-  direction: {
-    x: MovementDirectionValues;
-    y: MovementDirectionValues;
-  };
+  direction: MovementDirections;
   pos: {
     x: number;
     y: number;
@@ -71,10 +68,7 @@ export interface ServerWebSocketTransmitMovement {
 }
 export interface ServerWebSocketReceiveMovement {
   type: ServerWebSocketReceiveTypes.Movement;
-  direction: {
-    x: MovementDirectionValues;
-    y: MovementDirectionValues;
-  };
+  direction: MovementDirections;
   pos: {
     x: number;
     y: number;

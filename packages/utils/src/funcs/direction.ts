@@ -1,14 +1,12 @@
-import {
-  MovementKeyPresses,
-  MovementDirectionValues,
-  type MovementDirections,
-} from "./game";
+import { MovementKeyPresses, type MovementDirections } from "./game";
 
 export function getDirectionValue(dir: MovementDirections) {
   let direction = MovementKeyPresses.NONE;
-  if (dir.x === -1) direction = MovementKeyPresses.LEFT;
-  if (dir.x === 1) direction = MovementKeyPresses.RIGHT;
-  if (dir.y === -1) {
+
+  if (dir.movingLeft) direction = MovementKeyPresses.LEFT;
+  if (dir.movingRight) direction = MovementKeyPresses.RIGHT;
+
+  if (dir.movingUp) {
     switch (direction) {
       case MovementKeyPresses.NONE:
         direction = MovementKeyPresses.UP;
@@ -21,7 +19,8 @@ export function getDirectionValue(dir: MovementDirections) {
         break;
     }
   }
-  if (dir.y === 1) {
+
+  if (dir.movingDown) {
     switch (direction) {
       case MovementKeyPresses.NONE:
         direction = MovementKeyPresses.DOWN;
@@ -34,38 +33,36 @@ export function getDirectionValue(dir: MovementDirections) {
         break;
     }
   }
+
   return direction;
 }
 
 export function getDirection(
   directionValue: MovementKeyPresses,
 ): MovementDirections {
-  const isMovingLeft = [
-    MovementKeyPresses.LEFT,
-    MovementKeyPresses.LEFT_DOWN,
-    MovementKeyPresses.LEFT_UP,
-  ].includes(directionValue);
-
-  const isMovingUp = [
-    MovementKeyPresses.UP,
-    MovementKeyPresses.LEFT_UP,
-    MovementKeyPresses.RIGHT_UP,
-  ].includes(directionValue);
-
-  const isMovingDown = [
-    MovementKeyPresses.DOWN,
-    MovementKeyPresses.LEFT_DOWN,
-    MovementKeyPresses.RIGHT_DOWN,
-  ].includes(directionValue);
-
-  const isMovingRight = [
-    MovementKeyPresses.RIGHT,
-    MovementKeyPresses.RIGHT_DOWN,
-    MovementKeyPresses.RIGHT_UP,
-  ].includes(directionValue);
-
   return {
-    x: (isMovingLeft ? -1 : isMovingRight ? 1 : 0) as MovementDirectionValues,
-    y: (isMovingUp ? -1 : isMovingDown ? 1 : 0) as MovementDirectionValues,
+    movingLeft: [
+      MovementKeyPresses.LEFT,
+      MovementKeyPresses.LEFT_DOWN,
+      MovementKeyPresses.LEFT_UP,
+    ].includes(directionValue),
+
+    movingUp: [
+      MovementKeyPresses.UP,
+      MovementKeyPresses.LEFT_UP,
+      MovementKeyPresses.RIGHT_UP,
+    ].includes(directionValue),
+
+    movingDown: [
+      MovementKeyPresses.DOWN,
+      MovementKeyPresses.LEFT_DOWN,
+      MovementKeyPresses.RIGHT_DOWN,
+    ].includes(directionValue),
+
+    movingRight: [
+      MovementKeyPresses.RIGHT,
+      MovementKeyPresses.RIGHT_DOWN,
+      MovementKeyPresses.RIGHT_UP,
+    ].includes(directionValue),
   };
 }

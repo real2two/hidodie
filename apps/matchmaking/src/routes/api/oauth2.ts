@@ -25,13 +25,17 @@ router.post("/token", async (req, res) => {
     }),
   });
 
-  const { error, error_description, access_token, scope } =
+  const { error, access_token, scope } =
     (await tokenResponse.json()) as RESTPostOAuth2AccessTokenResult & {
       error: string;
-      error_description: string;
     };
 
-  if (error) return res.status(403).json({ error, error_description });
+  if (!tokenResponse.ok || error) {
+    return res.status(403).json({
+      error: "authentication_failure",
+      error_description: "Authentication or authorization failure",
+    });
+  }
 
   const allScopes = scope.split(" ");
   const missingScopes: string[] = [];

@@ -5,7 +5,7 @@ export function addGameInputs(docs: GameDocs, opts: CreateRoomHandlerOptions) {
   document.addEventListener("keydown", keyDown);
   document.addEventListener("keyup", keyUp);
 
-  let typing = false;
+  // const isTyping = () => document.activeElement === docs.sendChatInput;
 
   function keyDown(evt: KeyboardEvent) {
     const key = evt.key.toLowerCase();
@@ -26,8 +26,6 @@ export function addGameInputs(docs: GameDocs, opts: CreateRoomHandlerOptions) {
           docs.sendChatInput.value = "";
           docs.sendChatInput.focus();
           docs.sendChatInput.blur();
-
-          typing = false;
         }
         break;
     }

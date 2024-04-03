@@ -13,10 +13,11 @@ export enum MovementKeyPresses {
   RIGHT_DOWN = 8,
 }
 
-export type MovementDirectionValues = -1 | 0 | 1;
 export type MovementDirections = {
-  x: MovementDirectionValues;
-  y: MovementDirectionValues;
+  movingLeft: boolean;
+  movingUp: boolean;
+  movingDown: boolean;
+  movingRight: boolean;
 };
 
 export interface Player {

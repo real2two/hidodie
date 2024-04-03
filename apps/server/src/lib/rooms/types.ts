@@ -1,8 +1,7 @@
-import type { Websocket } from "hyper-express";
-
 export interface Room {
   roomId: string;
   players: Player[];
+  broadcast: (buffer: ArrayBuffer) => void;
 }
 
 export interface Player {
