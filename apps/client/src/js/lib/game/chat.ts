@@ -8,11 +8,18 @@ export enum ChatColors {
 }
 
 const CHAT_COLOR_VALUES = {
-  [ChatColors.Default]: "FFFFFF",
-  [ChatColors.Success]: "00461D",
-  [ChatColors.Error]: "720000",
-  [ChatColors.Secondary]: "505050",
+  [ChatColors.Default]: "default",
+  [ChatColors.Success]: "success",
+  [ChatColors.Error]: "error",
+  [ChatColors.Secondary]: "secondary",
 };
+
+export function clearChat(doc: HTMLDivElement) {
+  // Clear chat
+  messages.splice(messages.length);
+  // Update chat messages
+  updateChatMessage(doc);
+}
 
 export function addChatMessage(
   doc: HTMLDivElement,
@@ -21,8 +28,13 @@ export function addChatMessage(
 ) {
   // Add message
   messages.push(
-    `<span style="color:#${CHAT_COLOR_VALUES[color]}">${message}</span>`,
+    `<span class="chat-${CHAT_COLOR_VALUES[color]}">${message}</span>`,
   );
+  // Update chat messages
+  updateChatMessage(doc);
+}
+
+export function updateChatMessage(doc: HTMLDivElement) {
   // Only keep top 9 message
   messages.splice(0, messages.length - 9);
   // Update chat messages

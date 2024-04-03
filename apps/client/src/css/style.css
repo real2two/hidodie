@@ -15,21 +15,52 @@
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* place-items: center; */
+  /* min-width: 320px;
+  min-height: 100vh; */
+  width: 100%;
+  height: 100%;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+#chat {
+  /* position: relative; */
+}
+
+#chat-container {
+  position: absolute;
+  bottom: 0;
+
+  width: calc(100% - 8vh);
+  
+  margin-left: 4vh;
+  margin-bottom: 4vh;
+}
+
+#chat-input {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-color: transparent;
+  border-radius: 0px;
+  margin-top: 5px;
+  padding: 7px;
+  width: calc(100% - 16px);
+}
+
+.chat-default {
+  color: #ffffff;
+}
+.chat-success {
+  color: #00461D;
+}
+.chat-error {
+  color: #720000;
+}
+.chat-secondary {
+  color: #505050;
 }

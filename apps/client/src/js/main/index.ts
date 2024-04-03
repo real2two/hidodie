@@ -11,7 +11,7 @@ import {
 
 import { handleDiscordSdk } from "../lib/discord/setup";
 import { handleRoom } from "../lib/server/websocket";
-import { ChatColors, addChatMessage } from "../lib/game";
+import { ChatColors, addChatMessage, clearChat } from "../lib/game";
 
 import { getGameDocs } from "./docs";
 import { addGameInputs } from "../lib/game/inputs";
@@ -25,8 +25,10 @@ async function main() {
     `<p>Username: ${username}</p>` +
     `<p>Room: <code>${JSON.stringify(room)}</code></p>` +
     `<div id="chat">` +
-    `<div id="chat_container"></div><br>` +
-    `<input id="chat_input">` +
+    `<div id="chat-container">` +
+    `<div id="chat-messages"></div>` +
+    `<input id="chat-input">` +
+    `</div>` +
     `</div>`;
 
   const htmlDocs = getGameDocs();
@@ -64,7 +66,7 @@ async function main() {
           // Send join message
           if (!message.hidden) {
             addChatMessage(
-              htmlDocs.chatContainer,
+              htmlDocs.chatMessages,
               ChatColors.Secondary,
               `${sanitizeHtml(message.username)} joined the server`,
             );
@@ -73,7 +75,7 @@ async function main() {
 
         case ServerWebSocketReceiveTypes.PlayerLeft:
           addChatMessage(
-            htmlDocs.chatContainer,
+            htmlDocs.chatMessages,
             ChatColors.Secondary,
             `${sanitizeHtml(players.find((p) => p.id === message.player)?.username!)} left the server`,
           );
@@ -81,7 +83,7 @@ async function main() {
 
         case ServerWebSocketReceiveTypes.RecieveChatMessage:
           addChatMessage(
-            htmlDocs.chatContainer,
+            htmlDocs.chatMessages,
             ChatColors.Default,
             `${sanitizeHtml(players.find((p) => p.id === message.player)?.username!)}: ${sanitizeHtml(message.message)}`,
           );
@@ -100,5 +102,6 @@ async function main() {
     );
   }
 
+  clearChat(htmlDocs.chatMessages);
   const { removeInputs } = addGameInputs(htmlDocs, opts);
 }
