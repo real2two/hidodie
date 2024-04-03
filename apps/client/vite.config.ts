@@ -6,7 +6,7 @@ export default ({ mode }) => {
   return defineConfig({
     envDir: "../../",
     server: {
-      port: parseInt(process.env["VITE_PORT"]!) ?? 5174,
+      port: parseInt(process.env["VITE_PORT"]!) ?? 5173,
       proxy: {
         "/api/server/local": {
           target: "http://localhost:3002",
