@@ -8,7 +8,7 @@ export default {
 
   TestingServerPort: parseInt(process.env["TESTINGSERVER_PORT"]!) || 3002,
 
-  VitePort: parseInt(process.env["VITE_PORT"]!) || 5173,
+  VitePort: parseInt(process.env["VITE_PORT"]!) || 5174,
   ViteProxyTarget: process.env["VITE_PROXY_TARGET"] ?? "http://localhost:3001",
 
   JWTSecret: process.env["JWT_SECRET"]!,
