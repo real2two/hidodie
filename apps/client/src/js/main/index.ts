@@ -27,7 +27,7 @@ async function main() {
     `<div id="chat">` +
     `<div id="chat-container">` +
     `<div id="chat-messages"></div>` +
-    `<input id="chat-input">` +
+    `<input id="chat-input" maxlength="52">` +
     `</div>` +
     `</div>`;
 

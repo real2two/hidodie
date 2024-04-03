@@ -28,7 +28,7 @@ export function addChatMessage(
 ) {
   // Add message
   messages.push(
-    `<span class="chat-${CHAT_COLOR_VALUES[color]}">${message}</span>`,
+    `<span class="chat-${CHAT_COLOR_VALUES[color]}">${message}<br></span>`,
   );
   // Update chat messages
   updateChatMessage(doc);
@@ -38,5 +38,7 @@ export function updateChatMessage(doc: HTMLDivElement) {
   // Only keep top 9 message
   messages.splice(0, messages.length - 9);
   // Update chat messages
-  doc.innerHTML = messages.map((m) => `${m}<br>`).join("");
+  doc.innerHTML = messages.join("");
+  // Scroll down
+  doc.scrollTop = doc.scrollHeight;
 }

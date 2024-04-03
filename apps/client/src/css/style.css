@@ -29,10 +29,6 @@ body {
   height: 100%;
 }
 
-#chat {
-  /* position: relative; */
-}
-
 #chat-container {
   position: absolute;
   bottom: 0;
@@ -41,6 +37,14 @@ body {
   
   margin-left: 4vh;
   margin-bottom: 4vh;
+}
+
+#chat-messages {
+  width: 50%;
+  overflow-wrap: break-word;
+  
+  max-height: 50vh;
+  overflow-y: hidden;
 }
 
 #chat-input {
