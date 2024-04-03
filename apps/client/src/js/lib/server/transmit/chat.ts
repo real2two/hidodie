@@ -4,7 +4,9 @@ import {
   type ServerWebSocketTransmitSendChatMessage,
 } from "@/utils";
 
-export default (data: ServerWebSocketTransmitSendChatMessage): ArrayBuffer => {
+export default (
+  data: Omit<ServerWebSocketTransmitSendChatMessage, "type">,
+): ArrayBuffer => {
   // [ type, message ]
 
   const encodedMessage = textEncoder.encode(data.message);

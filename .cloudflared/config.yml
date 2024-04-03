@@ -1,0 +1,7 @@
+url: http://localhost:5173
+tunnel: b81210d2-8bd8-4f1f-ace6-be5b0933ed30
+credentials-file: //b81210d2-8bd8-4f1f-ace6-be5b0933ed30.json
+
+ingress:
+  - hostname: hidodie.customrpg.xyz
+    service: http://localhost:5173

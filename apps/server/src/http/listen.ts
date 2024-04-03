@@ -80,7 +80,6 @@ app.ws(
     for (const p of room.players) {
       ws.send(
         recieve[ServerWebSocketReceiveTypes.PlayerJoined]({
-          type: ServerWebSocketReceiveTypes.PlayerJoined,
           hidden: true,
           player: p.id,
           username: p.username,
@@ -95,7 +94,6 @@ app.ws(
     for (const p of room.players) {
       p.send(
         recieve[ServerWebSocketReceiveTypes.PlayerJoined]({
-          type: ServerWebSocketReceiveTypes.PlayerJoined,
           hidden: false,
           player: player.id,
           username: player.username,
@@ -133,7 +131,6 @@ app.ws(
             for (const p of room.players) {
               p.send(
                 recieve[ServerWebSocketReceiveTypes.RecieveChatMessage]({
-                  type: ServerWebSocketReceiveTypes.RecieveChatMessage,
                   player: player.id,
                   message: transformed.message,
                 }),
@@ -153,7 +150,6 @@ app.ws(
       for (const p of room.players) {
         p.send(
           recieve[ServerWebSocketReceiveTypes.PlayerLeft]({
-            type: ServerWebSocketReceiveTypes.PlayerLeft,
             player: player.id,
           }),
         );

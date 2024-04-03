@@ -4,7 +4,9 @@ import {
   type ServerWebSocketReceiveMovement,
 } from "@/utils";
 
-export default (data: ServerWebSocketReceiveMovement): ArrayBuffer => {
+export default (
+  data: Omit<ServerWebSocketReceiveMovement, "type">,
+): ArrayBuffer => {
   // [ type, player, direction, posX, posY ]
 
   const buffer = new ArrayBuffer(11);

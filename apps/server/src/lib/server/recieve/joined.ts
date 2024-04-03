@@ -4,7 +4,9 @@ import {
   type ServerWebSocketReceivePlayerJoined,
 } from "@/utils";
 
-export default (data: ServerWebSocketReceivePlayerJoined): ArrayBuffer => {
+export default (
+  data: Omit<ServerWebSocketReceivePlayerJoined, "type">,
+): ArrayBuffer => {
   // [ type, player, hidden, username ]
 
   const encodedMessage = textEncoder.encode(data.username);

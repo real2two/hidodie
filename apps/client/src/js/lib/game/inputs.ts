@@ -1,0 +1,46 @@
+import { ServerWebSocketTransmitTypes } from "@/utils";
+import type { GameDocs, CreateRoomHandlerOptions } from "../../../types";
+
+export function addGameInputs(docs: GameDocs, opts: CreateRoomHandlerOptions) {
+  document.addEventListener("keydown", keyDown);
+  document.addEventListener("keyup", keyUp);
+
+  let typing = false;
+
+  function keyDown(evt: KeyboardEvent) {
+    const key = evt.key.toLowerCase();
+    switch (key) {
+      case "enter":
+        if (document.activeElement !== docs.sendChatInput) {
+          docs.sendChatInput.focus();
+          docs.sendChatInput.select();
+        } else {
+          const message = docs.sendChatInput.value.trim();
+          if (message) {
+            opts.reply({
+              type: ServerWebSocketTransmitTypes.SendChatMessage,
+              message,
+            });
+          }
+
+          docs.sendChatInput.value = "";
+          docs.sendChatInput.focus();
+          docs.sendChatInput.blur();
+
+          typing = false;
+        }
+        break;
+    }
+  }
+
+  function keyUp(evt: KeyboardEvent) {
+    const key = evt.key.toLowerCase();
+  }
+
+  return {
+    removeInputs: () => {
+      document.removeEventListener("keydown", keyDown);
+      document.removeEventListener("keyup", keyUp);
+    },
+  };
+}

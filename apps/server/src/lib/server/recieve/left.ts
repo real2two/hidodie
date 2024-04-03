@@ -3,7 +3,9 @@ import {
   type ServerWebSocketReceivePlayerLeft,
 } from "@/utils";
 
-export default (data: ServerWebSocketReceivePlayerLeft): ArrayBuffer => {
+export default (
+  data: Omit<ServerWebSocketReceivePlayerLeft, "type">,
+): ArrayBuffer => {
   // [ type, player ]
 
   const buffer = new ArrayBuffer(2);

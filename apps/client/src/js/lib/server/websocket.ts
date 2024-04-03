@@ -8,6 +8,8 @@ import {
 import recieve from "./recieve";
 import transmit from "./transmit";
 
+import type { CreateRoomHandlerOptions } from "../../../types";
+
 export async function handleRoom({
   connection,
   roomId,
@@ -21,13 +23,15 @@ export async function handleRoom({
   roomId: string;
   gameToken: string;
   username: string;
-  onOpen: (opts: { reply: (data: ServerWebSocketTransmit) => void }) => unknown;
-  onMessage: (opts: {
-    message: ServerWebSocketReceive;
-    reply: (data: ServerWebSocketTransmit) => void;
-  }) => unknown;
-  onClose: () => unknown;
+  onOpen: (opts: CreateRoomHandlerOptions) => unknown;
+  onMessage: (
+    opts: CreateRoomHandlerOptions & {
+      message: ServerWebSocketReceive;
+    },
+  ) => unknown;
+  onClose: (opts: CreateRoomHandlerOptions) => unknown;
 }) {
+  // Find websocket URL
   const connectionUrl = connection.startsWith("/")
     ? `${document.location.host}${connection}`
     : connection;
@@ -39,6 +43,7 @@ export async function handleRoom({
       : "wss";
   const url = `${scheme}://${connectionUrl}/?room_id=${encodeURIComponent(roomId)}&game_token=${encodeURIComponent(gameToken)}&username=${encodeURIComponent(username)}`;
 
+  // Connect to WebSocket
   const ws = await connectToRoom(url);
   if (!ws) {
     return {
@@ -49,15 +54,13 @@ export async function handleRoom({
     };
   }
 
-  const reply = (data: ServerWebSocketTransmit) => {
-    // @ts-ignore TypeScript claims 'data' is never, but this is false.
-    const transformed = transmit[data.type]?.(data);
-    if (ws.readyState !== ws.OPEN) return;
-    return ws.send(transformed);
-  };
+  // Create options
+  const opts = createRoomHandlerOptions(ws);
 
-  onOpen({ reply });
+  // Join handler (sends the reply function)
+  onOpen(opts);
 
+  // Message handler
   ws.onmessage = (evt) => {
     let data: ArrayBuffer = evt.data;
     if (!(evt.data instanceof ArrayBuffer)) {
@@ -71,15 +74,30 @@ export async function handleRoom({
     const transformed = recieve[type]?.(view);
 
     if (!transformed) return;
-    return onMessage({ message: transformed, reply });
+    return onMessage({ message: transformed, ...opts });
   };
 
-  ws.onclose = () => onClose();
+  // Close handler
+  ws.onclose = () => onClose(opts);
   ws.onerror = (evt) => {
     console.error("WebSocket error", evt);
     ws.close();
   };
 
+  // Returns values
+  return opts;
+}
+
+export function createRoomHandlerOptions(ws: WebSocket) {
+  // Create reply function
+  const reply = (data: ServerWebSocketTransmit) => {
+    // @ts-ignore TypeScript claims 'data' is never, but this is false.
+    const transformed = transmit[data.type]?.(data);
+    if (ws.readyState !== ws.OPEN) return;
+    return ws.send(transformed);
+  };
+
+  // Create opts
   return {
     success: true,
     reply,
