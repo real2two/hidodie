@@ -15,6 +15,17 @@
 
 body {
   margin: 0;
+  overflow: hidden;
+}
+
+body, input {
+  font-size: calc(14px + .25vw);
+}
+
+@media screen and (max-height: 240px) {
+  body, input {
+    font-size: 3.5vw;
+  }
 }
 
 input {
