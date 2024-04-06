@@ -1,6 +1,12 @@
 import { MatchMakingRoom, MatchMakingError } from "../../../types";
 
-export async function getAccessToken(code: string) {
+export async function getAccessToken({
+  code,
+  channelId,
+}: {
+  code: string;
+  channelId: string;
+}) {
   const response = await fetch("/api/oauth2/token", {
     method: "POST",
     headers: {
@@ -8,6 +14,7 @@ export async function getAccessToken(code: string) {
     },
     body: JSON.stringify({
       code,
+      channel_id: channelId,
     }),
   });
 

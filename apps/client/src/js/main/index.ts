@@ -100,7 +100,6 @@ export async function setupGame({
           break;
 
         case ServerWebSocketReceiveTypes.Kicked:
-          console.log("ewiohfioewhFIOEWNIOFEWN", message)
           sdk.close(
             RPCCloseCodes.CLOSE_ABNORMAL,
             `You have been kicked from the server: ${message.reason || "No reason provided"}`,

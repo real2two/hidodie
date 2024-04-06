@@ -128,9 +128,7 @@ app.ws(
         // TODO: This is a WIP placeholder handler
         switch (transformed.type) {
           case ServerWebSocketTransmitTypes.Ping:
-            ws.send(
-              recieve[ServerWebSocketReceiveTypes.Ping](),
-            );
+            ws.send(recieve[ServerWebSocketReceiveTypes.Ping]());
             break;
           case ServerWebSocketTransmitTypes.SendChatMessage:
             room.broadcast(

@@ -10,7 +10,7 @@ import {
 export const router = new HyperExpress.Router();
 
 router.post("/token", async (req, res) => {
-  const body = await req.json();
+  const { code, channel_id } = await req.json();
 
   const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
     method: "POST",
@@ -21,7 +21,7 @@ router.post("/token", async (req, res) => {
       client_id: env.DiscordClientId,
       client_secret: env.DiscordClientSecret,
       grant_type: "authorization_code",
-      code: body.code,
+      code,
     }),
   });
 
@@ -68,6 +68,8 @@ router.post("/token", async (req, res) => {
         }
       : undefined,
   );
+
+  // TODO: Check if user is in the channel with the given 'channel_id'
 
   res.json({ user_token: userToken, access_token });
 });

@@ -6,7 +6,6 @@ import { isViteProduction } from "./debug";
 export async function handleDiscordSdk() {
   const sdk = await handleDiscordAuthentication();
 
-
   if (isViteProduction || sdk.platform === "mobile") {
     // Close the activity on game updates
     window.onbeforeunload = () => {

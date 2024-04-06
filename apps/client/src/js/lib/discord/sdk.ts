@@ -64,10 +64,10 @@ export async function handleDiscordAuthentication() {
         >["user"],
         locale: data.locale as string,
         member: data.member as APIGuildMember,
-        guild: data.guild as RESTAPIPartialCurrentUserGuild,
+        guild: data.guild as RESTAPIPartialCurrentUserGuild | null,
         channel: data.channel as Awaited<
           ReturnType<typeof discordSdk.commands.getChannel>
-        >,
+        > | null,
       };
     }
 
@@ -136,9 +136,18 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
     scope: requiredScopes,
   });
 
+  // Check if channelId is defined
+  if (!discordSdk.channelId) {
+    discordSdk.close(
+      RPCCloseCodes.CLOSE_UNSUPPORTED,
+      "channelId was not provided in DiscordSDK",
+    );
+    throw new Error("channelId was not provided in DiscordSDK");
+  }
+
   // Retrieve an access_token from your activity's server
   const { user_token, access_token } = isEmbedded
-    ? await getAccessToken(code)
+    ? await getAccessToken({ code, channelId: discordSdk.channelId })
     : { user_token: "mock_jwt", access_token: "mock_token" };
 
   // Authenticate with Discord client (using the access_token)
