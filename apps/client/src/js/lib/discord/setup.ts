@@ -6,6 +6,9 @@ import { isViteProduction } from "./debug";
 export async function handleDiscordSdk() {
   const sdk = await handleDiscordAuthentication();
 
+  // Disable right clicking
+  window.oncontextmenu = () => false;
+
   // Close the activity on game updates
   if (isViteProduction || sdk.platform === "mobile") {
     window.onbeforeunload = () => {
