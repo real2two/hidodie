@@ -1,5 +1,6 @@
 import env from "@/env";
 import HyperExpress from "hyper-express";
+import jwt from "jsonwebtoken";
 import {
   ServerWebSocketTransmitTypes,
   ServerWebSocketReceiveTypes,
@@ -17,7 +18,7 @@ app.upgrade("/", (req, res) => {
     game_token: gameToken,
   } = req.query_parameters;
 
-  // TODO: Check if username is allowed
+  // Check if username is allowed
   if (
     typeof username !== "string" ||
     username.length < 2 ||
@@ -25,6 +26,9 @@ app.upgrade("/", (req, res) => {
   ) {
     return res.close();
   }
+
+  // TODO: Check game token
+  // jwt.verify()
 
   // TODO: Validate the room ID and add room to database if it doesn't already exist
   // TODO: Add a way to delete ghost rooms
@@ -64,7 +68,6 @@ app.ws(
 
     // Get the room
     const room = rooms.get(roomId);
-    // TODO: Add proper close codes and messages (check ws.close() parameter options)
     if (!room) return ws.close();
 
     // Define the player's ID

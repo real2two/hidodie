@@ -3,10 +3,10 @@ import type { MovementDirections } from "..";
 // Message types
 export enum ServerWebSocketReceiveTypes {
   Ping = 0,
-  PlayerJoined = 1,
-  PlayerLeft = 2,
-  RecieveChatMessage = 3,
-  Movement = 4,
+  PlayerJoined = 2,
+  PlayerLeft = 3,
+  RecieveChatMessage = 4,
+  Movement = 5,
 }
 export enum ServerWebSocketTransmitTypes {
   Ping = 0,
