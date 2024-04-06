@@ -98,11 +98,19 @@ export async function setupGame({
             `${sanitizeHtml(players.find((p) => p.id === message.player)?.username!)}: ${sanitizeHtml(message.message)}`,
           );
           break;
+
+        case ServerWebSocketReceiveTypes.Kicked:
+          console.log("ewiohfioewhFIOEWNIOFEWN", message)
+          sdk.close(
+            RPCCloseCodes.CLOSE_ABNORMAL,
+            `You have been kicked from the server: ${message.reason || "No reason provided"}`,
+          );
+          break;
       }
     },
     onClose: () => {
       console.debug("Disconnected");
-      sdk.close(RPCCloseCodes.CLOSE_NORMAL, "Disconnected");
+      sdk.close(RPCCloseCodes.CLOSE_ABNORMAL, "Disconnected");
     },
   });
 

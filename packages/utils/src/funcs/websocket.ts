@@ -3,6 +3,7 @@ import type { MovementDirections } from "..";
 // Message types
 export enum ServerWebSocketReceiveTypes {
   Ping = 0,
+  Kicked = 1,
   PlayerJoined = 2,
   PlayerLeft = 3,
   RecieveChatMessage = 4,
@@ -21,6 +22,7 @@ export type ServerWebSocketTransmit =
   | ServerWebSocketTransmitMovement;
 export type ServerWebSocketReceive =
   | ServerWebSocketReceivePing
+  | ServerWebSocketReceiveKicked
   | ServerWebSocketReceivePlayerJoined
   | ServerWebSocketReceivePlayerLeft
   | ServerWebSocketReceiveSendChatMessage
@@ -32,6 +34,12 @@ export interface ServerWebSocketTransmitPing {
 }
 export interface ServerWebSocketReceivePing {
   type: ServerWebSocketReceiveTypes.Ping;
+}
+
+// Kicked
+export interface ServerWebSocketReceiveKicked {
+  type: ServerWebSocketReceiveTypes.Kicked;
+  reason: string;
 }
 
 // Player join and left

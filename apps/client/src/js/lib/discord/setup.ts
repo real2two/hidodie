@@ -6,14 +6,14 @@ import { isViteProduction } from "./debug";
 export async function handleDiscordSdk() {
   const sdk = await handleDiscordAuthentication();
 
-  // Disable right clicking
-  window.oncontextmenu = () => false;
 
-  // Close the activity on game updates
   if (isViteProduction || sdk.platform === "mobile") {
+    // Close the activity on game updates
     window.onbeforeunload = () => {
       sdk.close(RPCCloseCodes.TOKEN_REVOKED, "Browser refreshed");
     };
+    // Disable right clicking
+    window.oncontextmenu = () => false;
   }
 
   // Set activity on user's status

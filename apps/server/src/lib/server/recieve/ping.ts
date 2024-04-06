@@ -3,9 +3,7 @@ import {
   type ServerWebSocketReceivePing,
 } from "@/utils";
 
-export default (
-  _data: Omit<ServerWebSocketReceivePing, "type">,
-): ArrayBuffer => {
+export default (): ArrayBuffer => {
   // [ type ]
 
   return new Uint8Array([ServerWebSocketReceiveTypes.Ping]).buffer;

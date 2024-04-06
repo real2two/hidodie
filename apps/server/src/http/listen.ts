@@ -129,9 +129,7 @@ app.ws(
         switch (transformed.type) {
           case ServerWebSocketTransmitTypes.Ping:
             ws.send(
-              recieve[ServerWebSocketReceiveTypes.Ping]({
-                type: ServerWebSocketReceiveTypes.Ping,
-              }),
+              recieve[ServerWebSocketReceiveTypes.Ping](),
             );
             break;
           case ServerWebSocketTransmitTypes.SendChatMessage:
