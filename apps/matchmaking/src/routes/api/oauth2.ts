@@ -59,7 +59,7 @@ router.post("/token", async (req, res) => {
     },
   });
   const { id } = (await userResponse.json()) as RESTGetAPICurrentUserResult;
-  const gameToken = jwt.sign(
+  const userToken = jwt.sign(
     { id },
     env.JWTSecret,
     env.NodeEnv === "production"
@@ -69,5 +69,5 @@ router.post("/token", async (req, res) => {
       : undefined,
   );
 
-  res.json({ game_token: gameToken, access_token });
+  res.json({ user_token: userToken, access_token });
 });

@@ -43,7 +43,7 @@ export async function setupGame({
   const opts = await handleRoom({
     connection: room.connection,
     roomId: room.id,
-    gameToken: server.token,
+    userToken: server.token,
     username: username,
     onOpen: ({ reply }) => {
       console.debug("Connected");

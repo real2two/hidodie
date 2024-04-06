@@ -80,10 +80,10 @@ export async function handleDiscordAuthentication() {
   }
 
   try {
-    const { gameToken, auth } = await setupDiscordSdk(discordSdk);
+    const { userToken, auth } = await setupDiscordSdk(discordSdk);
     const data = {
       server: {
-        token: gameToken,
+        token: userToken,
       },
 
       user: auth.user,
@@ -137,9 +137,9 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
   });
 
   // Retrieve an access_token from your activity's server
-  const { game_token, access_token } = isEmbedded
+  const { user_token, access_token } = isEmbedded
     ? await getAccessToken(code)
-    : { game_token: "mock_jwt", access_token: "mock_token" };
+    : { user_token: "mock_jwt", access_token: "mock_token" };
 
   // Authenticate with Discord client (using the access_token)
   const auth = await discordSdk.commands.authenticate({
@@ -148,7 +148,7 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
 
   if (!auth) throw new Error("Authenticate command failed");
   return {
-    gameToken: game_token,
+    userToken: user_token,
     auth,
   };
 }

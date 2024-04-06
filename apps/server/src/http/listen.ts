@@ -15,7 +15,7 @@ app.upgrade("/", (req, res) => {
   const {
     room_id: roomId,
     username,
-    game_token: gameToken,
+    user_token: userToken,
   } = req.query_parameters;
 
   // Check if username is allowed
@@ -27,7 +27,7 @@ app.upgrade("/", (req, res) => {
     return res.close();
   }
 
-  // TODO: Check game token
+  // TODO: Check user token
   // jwt.verify()
 
   // TODO: Validate the room ID and add room to database if it doesn't already exist
@@ -48,7 +48,7 @@ app.upgrade("/", (req, res) => {
     return res.close();
   }
 
-  // TODO: Handle game token validation (or some other authorization system for joining)
+  // TODO: Handle user token validation (or some other authorization system for joining)
 
   res.upgrade({
     username,

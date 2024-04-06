@@ -12,7 +12,7 @@ export async function getAccessToken(code: string) {
   });
 
   return (await response.json()) as {
-    game_token: string;
+    user_token: string;
     access_token: string;
   };
 }
@@ -20,13 +20,13 @@ export async function getAccessToken(code: string) {
 export async function requestRoom(
   connectionType: "default" | "discord",
   instanceId: string,
-  gameToken: string,
+  userToken: string,
 ) {
   const response = await fetch(
     `/api/room?` +
       `connection_type=${encodeURIComponent(connectionType)}&` +
       `instance_id=${encodeURIComponent(instanceId)}&` +
-      `game_token=${encodeURIComponent(gameToken)}`,
+      `user_token=${encodeURIComponent(userToken)}`,
   );
 
   return (await response.json()) as MatchMakingRoom & MatchMakingError;

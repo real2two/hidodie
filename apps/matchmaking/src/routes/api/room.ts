@@ -11,11 +11,11 @@ router.get("/", async (req, res) => {
   const {
     connection_type: connectionType,
     instance_id: instanceId,
-    game_token: gameToken,
+    user_token: userToken,
   } = req.query_parameters as {
     connection_type: "default" | "discord";
     instance_id: string;
-    game_token: string;
+    user_token: string;
   };
 
   if (env.NodeEnv === "production") {
@@ -42,23 +42,23 @@ router.get("/", async (req, res) => {
     });
   }
 
-  if (typeof gameToken !== "string") {
+  if (typeof userToken !== "string") {
     return res.status(500).json({
-      error: "missing_game_token",
-      error_description: "game_token must be provided",
+      error: "missing_user_token",
+      error_description: "user_token must be provided",
     });
   }
 
   let userId: string | null = null;
-  if (env.NodeEnv === "production" || gameToken !== "mock_jwt") {
+  if (env.NodeEnv === "production" || userToken !== "mock_jwt") {
     try {
-      const decoded = jwt.verify(gameToken, env.JWTSecret) as { id: string };
+      const decoded = jwt.verify(userToken, env.JWTSecret) as { id: string };
       userId = decoded.id;
     } catch (err) {
       console.error(err);
       return res.status(403).json({
-        error: "invalid_game_token",
-        error_description: "The provided game_token was invalid",
+        error: "invalid_user_token",
+        error_description: "The provided user_token was invalid",
       });
     }
   }
