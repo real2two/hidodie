@@ -15,7 +15,7 @@
     "schema/push": "cd packages/db && pnpm schema/push",
     "schema/generate": "cd packages/db && pnpm schema/generate",
     "schema/migrate": "cd packages/db && pnpm schema/migrate",
-    "cloudflared": "cd apps/client && pnpm cloudflared"
+    "cloudflared": "cloudflared tunnel run hidodiedev"
   },
   "devDependencies": {
     "@/eslint-config": "workspace:*",

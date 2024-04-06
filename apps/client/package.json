@@ -8,8 +8,7 @@
     "start": "vite preview",
     "dev": "vite",
     "lint": "eslint ./**/*.ts",
-    "format": "cd ../../ && pnpm format",
-    "cloudflared": "dotenv -e ../../.env -- node tools/cloudflared.js"
+    "format": "cd ../../ && pnpm format"
   },
   "eslintConfig": {
     "root": true,
@@ -21,7 +20,6 @@
     "@/eslint-config": "workspace:*",
     "@/tsconfig": "workspace:*",
     "@/utils": "workspace:*",
-    "cloudflared": "^0.5.1",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
   },

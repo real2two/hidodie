@@ -39,9 +39,6 @@ importers:
       '@/utils':
         specifier: workspace:*
         version: link:../../packages/utils
-      cloudflared:
-        specifier: ^0.5.1
-        version: 0.5.1
       typescript:
         specifier: ^5.2.2
         version: 5.4.3
@@ -1255,12 +1252,6 @@ packages:
       es6-iterator: 2.0.3
       memoizee: 0.4.15
       timers-ext: 0.1.7
-    dev: true
-
-  /cloudflared@0.5.1:
-    resolution: {integrity: sha512-DQ33z5dBrE32xrHRyA35CtE8WcDgOzefR0/x/gVVa2jSKc54vRTIDwNQXCbXcet3sv2DOVtLWUbdcjxbCYK+OQ==}
-    hasBin: true
-    requiresBuild: true
     dev: true
 
   /color-convert@2.0.1:
