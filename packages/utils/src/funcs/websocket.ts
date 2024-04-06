@@ -4,10 +4,11 @@ import type { MovementDirections } from "..";
 export enum ServerWebSocketReceiveTypes {
   Ping = 0,
   Kicked = 1,
-  PlayerJoined = 2,
-  PlayerLeft = 3,
-  RecieveChatMessage = 4,
-  Movement = 5,
+  PlayerAdded = 2,
+  PlayerJoined = 3,
+  PlayerLeft = 4,
+  RecieveChatMessage = 5,
+  Movement = 6,
 }
 export enum ServerWebSocketTransmitTypes {
   Ping = 0,
@@ -23,6 +24,7 @@ export type ServerWebSocketTransmit =
 export type ServerWebSocketReceive =
   | ServerWebSocketReceivePing
   | ServerWebSocketReceiveKicked
+  | ServerWebSocketReceivePlayerAdded
   | ServerWebSocketReceivePlayerJoined
   | ServerWebSocketReceivePlayerLeft
   | ServerWebSocketReceiveSendChatMessage
@@ -43,10 +45,14 @@ export interface ServerWebSocketReceiveKicked {
 }
 
 // Player join and left
+export interface ServerWebSocketReceivePlayerAdded {
+  type: ServerWebSocketReceiveTypes.PlayerAdded;
+  player: number;
+  username: string;
+}
 export interface ServerWebSocketReceivePlayerJoined {
   type: ServerWebSocketReceiveTypes.PlayerJoined;
   player: number;
-  hidden: boolean;
   username: string;
 }
 export interface ServerWebSocketReceivePlayerLeft {

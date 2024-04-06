@@ -61,6 +61,7 @@ export async function setupGame({
       console.debug("Message recieved", message);
 
       switch (message.type) {
+        case ServerWebSocketReceiveTypes.PlayerAdded:
         case ServerWebSocketReceiveTypes.PlayerJoined:
           // Update player values
           const existingPlayer = players.find((p) => p.id === message.player);
@@ -74,7 +75,7 @@ export async function setupGame({
           }
 
           // Send join message
-          if (!message.hidden) {
+          if (message.type === ServerWebSocketReceiveTypes.PlayerJoined) {
             addChatMessage(
               htmlDocs.chatMessages,
               ChatColors.Secondary,

@@ -88,8 +88,7 @@ app.ws(
     // Send all current player data to new player
     for (const p of room.players) {
       ws.send(
-        recieve[ServerWebSocketReceiveTypes.PlayerJoined]({
-          hidden: true,
+        recieve[ServerWebSocketReceiveTypes.PlayerAdded]({
           player: p.id,
           username: p.username,
         }),
@@ -102,7 +101,6 @@ app.ws(
     // Send join
     room.broadcast(
       recieve[ServerWebSocketReceiveTypes.PlayerJoined]({
-        hidden: false,
         player: player.id,
         username: player.username,
       }),
