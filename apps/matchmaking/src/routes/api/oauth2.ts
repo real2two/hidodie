@@ -59,7 +59,9 @@ router.post("/token", async (req, res) => {
     },
   });
   const { id } = (await userResponse.json()) as RESTGetAPICurrentUserResult;
-  const gameToken = jwt.sign({ id }, env.JWTSecret, { expiresIn: "1m" });
+  const gameToken = jwt.sign({ id }, env.JWTSecret, {
+    expiresIn: env.NodeEnv === "production" ? 60 : undefined,
+  });
 
   res.json({ game_token: gameToken, access_token });
 });

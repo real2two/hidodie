@@ -134,6 +134,9 @@ importers:
       '@/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
+      '@types/jsonwebtoken':
+        specifier: ^9.0.6
+        version: 9.0.6
       '@types/node':
         specifier: ^20.11.30
         version: 20.11.30
