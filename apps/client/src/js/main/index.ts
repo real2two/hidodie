@@ -30,7 +30,7 @@ export async function setupGame({
   server,
 }: Awaited<ReturnType<typeof handleDiscordSdk>>) {
   document.querySelector("#app")!.innerHTML =
-    `<canvas id="canvas"></canvas>` +
+    `<canvas id="canvas" width="1920" height="1080"></canvas>` +
     `<div id="chat">` +
     `<div id="chat-container"></div>` +
     `<input id="chat-input" maxlength="52">` +
@@ -52,10 +52,6 @@ export async function setupGame({
       reply({
         type: ServerWebSocketTransmitTypes.Ping,
       });
-
-      window.onresize = () => {
-        htmlDocs.chatMessages.scrollTop = htmlDocs.chatMessages.scrollHeight;
-      };
     },
     onMessage: ({ message, reply }) => {
       console.debug("Message recieved", message);
@@ -110,7 +106,6 @@ export async function setupGame({
     },
     onClose: () => {
       console.debug("Disconnected");
-      removeInputs();
       sdk.close(RPCCloseCodes.CLOSE_ABNORMAL, "Disconnected");
     },
   });
@@ -122,6 +117,47 @@ export async function setupGame({
     );
   }
 
+  const canvas = htmlDocs.canvas;
+  const ctx = htmlDocs.canvas.getContext("2d", {
+    alpha: false,
+  }) as CanvasRenderingContext2D;
+
   clearChat(htmlDocs.chatMessages);
-  const { removeInputs } = addGameInputs(htmlDocs, opts);
+  addGameInputs(htmlDocs, opts);
+
+  resize();
+  window.onresize = resize;
+
+  draw();
+
+  function draw() {
+    ctx.clearRect(0, 0, 1920, 1080);
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(100, 100, 75, 75);
+
+    requestAnimationFrame(draw);
+  }
+
+  function resize() {
+    // Fix chat messages scrollbar
+    htmlDocs.chatMessages.scrollTop = htmlDocs.chatMessages.scrollHeight;
+
+    // Resize canvas
+    const scale = Math.min(
+      (window.innerWidth ||
+        (document.documentElement && document.documentElement.clientWidth) ||
+        (document.body && document.body.clientWidth) ||
+        0) / 1920,
+      (window.innerHeight ||
+        (document.documentElement && document.documentElement.clientHeight) ||
+        (document.body && document.body.clientHeight) ||
+        0) / 1080,
+    );
+
+    canvas.width = 1920 * scale;
+    canvas.height = 1080 * scale;
+
+    ctx.scale(scale, scale);
+  }
 }
