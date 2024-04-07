@@ -4,7 +4,9 @@ import { servers } from "./servers";
 
 export const rooms = mysqlTable("rooms", {
   roomId: varchar("id", { length: 128 }).primaryKey(),
-  serverId: varchar("server_id", { length: 32 }).notNull(),
+  serverId: varchar("server_id", { length: 32 })
+    .notNull()
+    .references(() => servers.serverId),
 });
 
 export const roomsRelations = relations(rooms, ({ one }) => ({

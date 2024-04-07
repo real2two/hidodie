@@ -6,7 +6,13 @@ export default {
   MatchmakingServerPort:
     parseInt(process.env["MATCHMAKINGSERVER_PORT"]!) || 3001,
 
-  TestingServerPort: parseInt(process.env["TESTINGSERVER_PORT"]!) || 3002,
+  GameServerId: process.env["GAMESERVER_ID"]! || "local",
+  GameServerPort: parseInt(process.env["GAMESERVER_PORT"]!) || 3002,
+  GameServerConnection:
+    process.env["GAMESERVER_CONNECTION"]! || "localhost:3002",
+  GameServerDiscordUrlMapping:
+    process.env["GAMESERVER_DISCORDURLMAPPING"]! || "/api/server/local",
+  GameServerMaxRooms: parseInt(process.env["GAMESERVER_MAXROOMS"]!) || 100,
 
   VitePort: parseInt(process.env["VITE_PORT"]!) || 5173,
   ViteProxyTarget: process.env["VITE_PROXY_TARGET"] ?? "http://localhost:3001",

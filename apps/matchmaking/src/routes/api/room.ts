@@ -6,8 +6,6 @@ import { getInstanceIdFromUserToken } from "../../lib/rooms";
 
 export const router = new HyperExpress.Router();
 
-// TODO: Add rate limiting on this endpoint and the WebSocket
-
 router.get("/", async (req, res) => {
   // Get the instance ID
   const { connection_type: connectionType, user_token: userToken } =

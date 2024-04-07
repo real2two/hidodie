@@ -11,3 +11,5 @@ CREATE TABLE `servers` (
 	`max_rooms` int unsigned NOT NULL,
 	CONSTRAINT `servers_id` PRIMARY KEY(`id`)
 );
+--> statement-breakpoint
+ALTER TABLE `rooms` ADD CONSTRAINT `rooms_server_id_servers_id_fk` FOREIGN KEY (`server_id`) REFERENCES `servers`(`id`) ON DELETE no action ON UPDATE no action;

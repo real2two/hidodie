@@ -10,17 +10,10 @@ import {
 import { rooms, validateUserToken, type Player, type Room } from "../lib/rooms";
 import { recieve, transmit } from "../lib/server";
 
-// TODO: Add a way to set this value without hardcoding it
-const serverId = "local";
-
 export const app = new HyperExpress.Server();
 
 app.upgrade("/", async (req, res) => {
-  const {
-    room_id: roomId,
-    username,
-    user_token: userToken,
-  } = req.query_parameters;
+  const { username, user_token: userToken } = req.query_parameters;
 
   // Check if username is allowed
   if (
@@ -42,15 +35,15 @@ app.upgrade("/", async (req, res) => {
     connectionData = data;
   } else {
     connectionData = {
-      instanceId: "mock_instance",
+      instanceId: "mock_room_id",
       userId: username,
     };
   }
 
+  // Send upgrade data
   res.upgrade({
     username,
-    roomId,
-    instanceId: connectionData.instanceId,
+    roomId: connectionData.instanceId,
     userId: connectionData.userId,
   });
 });
@@ -63,7 +56,7 @@ app.ws(
     message_type: "ArrayBuffer",
   },
   async (ws) => {
-    const { roomId, username } = ws.context;
+    const { roomId, userId, username } = ws.context;
 
     // Get the room
     let room = rooms.get(roomId);
@@ -71,14 +64,14 @@ app.ws(
       // Inserts a row in the table `rooms` for the new room
       try {
         await db.insert(schema.rooms).values({
-          roomId: roomId,
-          serverId,
+          roomId,
+          serverId: env.GameServerId,
         });
       } catch (err) {
         console.error(err);
         ws.send(
           recieve[ServerWebSocketReceiveTypes.Kicked]({
-            reason: "Failed to create room",
+            reason: "Failed to create room. Please try again.",
           }),
         );
         return ws.close();
@@ -108,6 +101,16 @@ app.ws(
       return ws.close();
     }
 
+    // Find if player is already in the server
+    if (room.players.find((p) => p.userId === userId)) {
+      ws.send(
+        recieve[ServerWebSocketReceiveTypes.Kicked]({
+          reason: "You're already in the server",
+        }),
+      );
+      return ws.close();
+    }
+
     // Define the player's ID
     let playerId = 0;
     while (room.players.find((p) => p.id === playerId)) playerId++;
@@ -115,6 +118,7 @@ app.ws(
     // The player object
     const player: Player = {
       id: playerId,
+      userId,
       username,
       send: (buffer) => {
         if (!ws.closed) {
@@ -158,10 +162,8 @@ app.ws(
 
         if (!transformed) return;
 
-        // TODO: This is a WIP placeholder message
         console.log("WebSocket transformed message", transformed);
 
-        // TODO: This is a WIP placeholder handler
         switch (transformed.type) {
           case ServerWebSocketTransmitTypes.Ping:
             ws.send(recieve[ServerWebSocketReceiveTypes.Ping]());
@@ -208,4 +210,4 @@ app.all("*", (req, res) => {
   });
 });
 
-app.listen(env.TestingServerPort);
+app.listen(env.GameServerPort);

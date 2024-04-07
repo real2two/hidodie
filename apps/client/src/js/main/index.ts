@@ -57,7 +57,7 @@ export async function setupGame({
         htmlDocs.chatMessages.scrollTop = htmlDocs.chatMessages.scrollHeight;
       };
     },
-    onMessage: ({ message }) => { // TODO: Add this back: , reply
+    onMessage: ({ message, reply }) => {
       console.debug("Message recieved", message);
 
       switch (message.type) {
@@ -110,6 +110,7 @@ export async function setupGame({
     },
     onClose: () => {
       console.debug("Disconnected");
+      removeInputs();
       sdk.close(RPCCloseCodes.CLOSE_ABNORMAL, "Disconnected");
     },
   });
@@ -122,5 +123,5 @@ export async function setupGame({
   }
 
   clearChat(htmlDocs.chatMessages);
-  addGameInputs(htmlDocs, opts); // TODO: const { removeInputs } = 
+  const { removeInputs } = addGameInputs(htmlDocs, opts);
 }

@@ -31,9 +31,9 @@ export function addGameInputs(docs: GameDocs, opts: CreateRoomHandlerOptions) {
     }
   }
 
-  // TODO: Finish key up events
-  function keyUp(_evt: KeyboardEvent) {
-    // const key = evt.key.toLowerCase();
+  function keyUp(evt: KeyboardEvent) {
+    // TODO: Finish key up events
+    const key = evt.key.toLowerCase();
   }
 
   return {

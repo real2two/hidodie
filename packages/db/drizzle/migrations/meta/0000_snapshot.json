@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "8824f154-e972-44a2-8558-ef326f5da79d",
+  "id": "c5619192-b374-4042-9d1a-30225df32013",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "rooms": {
@@ -23,7 +23,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "rooms_server_id_servers_id_fk": {
+          "name": "rooms_server_id_servers_id_fk",
+          "tableFrom": "rooms",
+          "tableTo": "servers",
+          "columnsFrom": [
+            "server_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {
         "rooms_id": {
           "name": "rooms_id",

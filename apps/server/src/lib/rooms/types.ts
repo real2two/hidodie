@@ -6,6 +6,7 @@ export interface Room {
 
 export interface Player {
   id: number;
+  userId: string;
   username: string;
   send: (buffer: ArrayBuffer) => void;
 }
