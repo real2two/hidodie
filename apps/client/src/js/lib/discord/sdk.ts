@@ -147,8 +147,15 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
 
   // Retrieve an access_token from your activity's server
   const { user_token, access_token } = isEmbedded
-    ? await getAccessToken({ code, channelId: discordSdk.channelId })
-    : { user_token: "mock_jwt", access_token: "mock_token" };
+    ? await getAccessToken({
+        code,
+        channelId: discordSdk.channelId,
+        instanceId: discordSdk.instanceId,
+      })
+    : {
+        user_token: "mock_jwt",
+        access_token: "mock_token",
+      };
 
   // Authenticate with Discord client (using the access_token)
   const auth = await discordSdk.commands.authenticate({

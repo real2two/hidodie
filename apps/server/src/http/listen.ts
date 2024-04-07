@@ -1,17 +1,21 @@
 import env from "@/env";
 import HyperExpress from "hyper-express";
-import jwt from "jsonwebtoken";
+import { eq } from "drizzle-orm";
+import { db, schema } from "@/db";
 import {
   ServerWebSocketTransmitTypes,
   ServerWebSocketReceiveTypes,
 } from "@/utils";
 
-import { rooms, type Player, type Room } from "../lib/rooms";
+import { rooms, validateUserToken, type Player, type Room } from "../lib/rooms";
 import { recieve, transmit } from "../lib/server";
+
+// TODO: Add a way to set this value without hardcoding it
+const serverId = "local";
 
 export const app = new HyperExpress.Server();
 
-app.upgrade("/", (req, res) => {
+app.upgrade("/", async (req, res) => {
   const {
     room_id: roomId,
     username,
@@ -27,32 +31,27 @@ app.upgrade("/", (req, res) => {
     return res.close();
   }
 
-  // TODO: Check user token
-  // jwt.verify()
-
-  // TODO: Validate the room ID and add room to database if it doesn't already exist
-  // TODO: Add a way to delete ghost rooms
-  const room = rooms.get(roomId);
-  if (!room) {
-    const newRoom: Room = {
-      roomId,
-      players: [],
-      broadcast: (buffer) => {
-        for (const p of newRoom.players) {
-          p.send(buffer);
-        }
-      },
+  // Check user token
+  let connectionData: { instanceId: string; userId: string };
+  if (env.NodeEnv === "production" || userToken !== "mock_jwt") {
+    const { success, data } = await validateUserToken(
+      userToken,
+      env.NodeEnv === "production",
+    );
+    if (!success || !data) return res.close();
+    connectionData = data;
+  } else {
+    connectionData = {
+      instanceId: "mock_instance",
+      userId: username,
     };
-    rooms.set(roomId, newRoom);
-  } else if (room.players.length >= 256) {
-    return res.close();
   }
-
-  // TODO: Handle user token validation (or some other authorization system for joining)
 
   res.upgrade({
     username,
     roomId,
+    instanceId: connectionData.instanceId,
+    userId: connectionData.userId,
   });
 });
 
@@ -63,12 +62,51 @@ app.ws(
     max_payload_length: 32 * 1024,
     message_type: "ArrayBuffer",
   },
-  (ws) => {
+  async (ws) => {
     const { roomId, username } = ws.context;
 
     // Get the room
-    const room = rooms.get(roomId);
-    if (!room) return ws.close();
+    let room = rooms.get(roomId);
+    if (!room) {
+      // Inserts a row in the table `rooms` for the new room
+      try {
+        await db.insert(schema.rooms).values({
+          roomId: roomId,
+          serverId,
+        });
+      } catch (err) {
+        console.error(err);
+        ws.send(
+          recieve[ServerWebSocketReceiveTypes.Kicked]({
+            reason: "Failed to create room",
+          }),
+        );
+        return ws.close();
+      }
+
+      // Tries getting the room again
+      room = rooms.get(roomId);
+      if (!room) {
+        // Creates room in memory
+        const newRoom: Room = {
+          roomId,
+          players: [],
+          broadcast: (buffer) => {
+            for (const p of newRoom.players) {
+              p.send(buffer);
+            }
+          },
+        };
+        rooms.set(roomId, (room = newRoom));
+      }
+    } else if (room.players.length >= 25) {
+      ws.send(
+        recieve[ServerWebSocketReceiveTypes.Kicked]({
+          reason: "The room is full",
+        }),
+      );
+      return ws.close();
+    }
 
     // Define the player's ID
     let playerId = 0;
@@ -142,7 +180,7 @@ app.ws(
       }
     });
 
-    ws.once("close", () => {
+    ws.once("close", async () => {
       console.log(`A player has disconnected`);
 
       // Send leave message
@@ -156,7 +194,10 @@ app.ws(
       room.players.splice(room.players.indexOf(player), 1);
 
       // Room deletion
-      if (!room.players.length) rooms.delete(roomId);
+      if (!room.players.length) {
+        await db.delete(schema.rooms).where(eq(schema.rooms.roomId, roomId));
+        rooms.delete(roomId);
+      }
     });
   },
 );

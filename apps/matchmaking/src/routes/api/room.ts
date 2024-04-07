@@ -1,22 +1,20 @@
 import env from "@/env";
 import HyperExpress from "hyper-express";
-import jwt from "jsonwebtoken";
 import { eq, sql } from "drizzle-orm";
 import { db, schema } from "@/db";
+import { getInstanceIdFromUserToken } from "../../lib/rooms";
 
 export const router = new HyperExpress.Router();
 
+// TODO: Add rate limiting on this endpoint and the WebSocket
+
 router.get("/", async (req, res) => {
   // Get the instance ID
-  const {
-    connection_type: connectionType,
-    instance_id: instanceId,
-    user_token: userToken,
-  } = req.query_parameters as {
-    connection_type: "default" | "discord";
-    instance_id: string;
-    user_token: string;
-  };
+  const { connection_type: connectionType, user_token: userToken } =
+    req.query_parameters as {
+      connection_type: "default" | "discord";
+      user_token: string;
+    };
 
   if (env.NodeEnv === "production") {
     if (connectionType !== "discord") {
@@ -35,13 +33,6 @@ router.get("/", async (req, res) => {
     }
   }
 
-  if (typeof instanceId !== "string") {
-    return res.status(500).json({
-      error: "missing_instance_id",
-      error_description: "instance_id must be provided",
-    });
-  }
-
   if (typeof userToken !== "string") {
     return res.status(500).json({
       error: "missing_user_token",
@@ -49,23 +40,18 @@ router.get("/", async (req, res) => {
     });
   }
 
-  let userId: string | null = null;
+  // JWT verification
+  let roomId = "mock_room_id";
   if (env.NodeEnv === "production" || userToken !== "mock_jwt") {
-    try {
-      const decoded = jwt.verify(userToken, env.JWTSecret) as { id: string };
-      userId = decoded.id;
-    } catch (err) {
-      console.error(err);
+    const instanceId = await getInstanceIdFromUserToken(userToken);
+    if (!instanceId)
       return res.status(403).json({
         error: "invalid_user_token",
         error_description: "The provided user_token was invalid",
       });
-    }
-  }
 
-  // Instance validation
-  // TODO: Add some sort of instance ID validation
-  const roomId = instanceId;
+    roomId = instanceId;
+  }
 
   // If there's a room for the following instance, send the connection details
   const room = (
@@ -118,8 +104,8 @@ router.get("/", async (req, res) => {
     });
   } else {
     // Found an available game server, so create a room on the game server
+    // I don't think I should worry if reverse engineers choose their own game servers, since it doesn't really matter.
 
-    // TODO: Insert a row in the table `rooms` for the new room
     return res.json({
       room: {
         id: roomId,

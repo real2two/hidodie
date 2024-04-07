@@ -3,11 +3,13 @@ import { MatchMakingRoom, MatchMakingError } from "../../../types";
 export async function getAccessToken({
   code,
   channelId,
+  instanceId,
 }: {
   code: string;
   channelId: string;
+  instanceId: string;
 }) {
-  const response = await fetch("/api/oauth2/token", {
+  const response = await fetch("/api/oauth2/callback", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -15,6 +17,7 @@ export async function getAccessToken({
     body: JSON.stringify({
       code,
       channel_id: channelId,
+      instance_id: instanceId,
     }),
   });
 
@@ -26,13 +29,11 @@ export async function getAccessToken({
 
 export async function requestRoom(
   connectionType: "default" | "discord",
-  instanceId: string,
   userToken: string,
 ) {
   const response = await fetch(
     `/api/room?` +
       `connection_type=${encodeURIComponent(connectionType)}&` +
-      `instance_id=${encodeURIComponent(instanceId)}&` +
       `user_token=${encodeURIComponent(userToken)}`,
   );
 

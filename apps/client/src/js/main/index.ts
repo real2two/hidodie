@@ -57,7 +57,7 @@ export async function setupGame({
         htmlDocs.chatMessages.scrollTop = htmlDocs.chatMessages.scrollHeight;
       };
     },
-    onMessage: ({ message, reply }) => {
+    onMessage: ({ message }) => { // TODO: Add this back: , reply
       console.debug("Message recieved", message);
 
       switch (message.type) {
@@ -122,5 +122,5 @@ export async function setupGame({
   }
 
   clearChat(htmlDocs.chatMessages);
-  const { removeInputs } = addGameInputs(htmlDocs, opts);
+  addGameInputs(htmlDocs, opts); // TODO: const { removeInputs } = 
 }

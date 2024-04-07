@@ -34,12 +34,11 @@ export async function handleDiscordSdk() {
   // Get username and instance ID of the player
   const username =
     sdk.member?.nick || sdk.user.global_name || sdk.user.username;
-  const { instanceId, server } = sdk;
+  const { server } = sdk;
 
   // Request a room based off the instance ID
   const room = await requestRoom(
     sdk.mock ? "default" : "discord",
-    instanceId,
     server.token,
   );
   if (room.error) {
