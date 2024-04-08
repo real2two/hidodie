@@ -155,7 +155,8 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
     connection,
   } = await authorizeUser({
     code,
-    connectionType: isEmbedded ? "default" : "discord",
+    connectionType:
+      discordSdk instanceof DiscordSDKMock ? "default" : "discord",
     channelId: discordSdk.channelId,
     instanceId: discordSdk.instanceId,
   });

@@ -14,14 +14,14 @@ export const app = new HyperExpress.Server();
 
 app.upgrade("/", async (req, res) => {
   const { user_token: userToken } = req.query_parameters;
-  
+
   // Check user token
   const { success, data } = await validateUserToken(
     userToken,
     env.NodeEnv === "production",
   );
   if (!success || !data) return res.close();
-  
+
   // Check server ID
   if (data.gameServerId !== env.GameServerId) return res.close();
 

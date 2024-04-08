@@ -16,8 +16,8 @@ export async function createMockDiscordSdk() {
   const mockUserId = getOverrideOrRandomSessionValue(
     SessionStorageQueryParam.userId,
   );
-  const mockGuildId = "00000000000000000"
-  const mockChannelId = "00000000000000000"
+  const mockGuildId = "00000000000000000";
+  const mockChannelId = "00000000000000000";
 
   // Create mock SDK
   const discordSdk = new DiscordSDKMock(
