@@ -12,17 +12,13 @@ import type { CreateRoomHandlerOptions } from "../../../types";
 
 export async function handleRoom({
   connection,
-  roomId,
   userToken,
-  username,
   onOpen,
   onMessage,
   onClose,
 }: {
   connection: string;
-  roomId: string;
   userToken: string;
-  username: string;
   onOpen: (opts: CreateRoomHandlerOptions) => unknown;
   onMessage: (
     opts: CreateRoomHandlerOptions & {
@@ -41,7 +37,7 @@ export async function handleRoom({
     connection === "localhost"
       ? "ws"
       : "wss";
-  const url = `${scheme}://${connectionUrl}/?user_token=${encodeURIComponent(userToken)}&username=${encodeURIComponent(username)}`;
+  const url = `${scheme}://${connectionUrl}/?user_token=${encodeURIComponent(userToken)}`;
 
   // Connect to WebSocket
   const ws = await connectToRoom(url);

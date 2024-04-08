@@ -1,7 +1,6 @@
 import HyperExpress from "hyper-express";
 
-import { router as roomRouter } from "./api/room";
-import { router as oauth2Router } from "./api/oauth2";
+import { router as authorizeRouter } from "./api/authorize";
 
 export const router = new HyperExpress.Router();
 
@@ -11,8 +10,7 @@ router.get("/", (req, res) => {
   });
 });
 
-router.use("/room", roomRouter);
-router.use("/oauth2", oauth2Router);
+router.use("/authorize", authorizeRouter);
 
 router.all("/*", (req, res) => {
   res.status(404).json({

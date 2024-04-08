@@ -13,7 +13,7 @@ import {
 } from "discord-api-types/v10";
 
 import { requiredScopes } from "@/utils";
-import { getAccessToken } from "../server/api";
+import { authorizeUser } from "../server/api";
 
 import {
   createMockDiscordSdk,
@@ -55,8 +55,10 @@ export async function handleDiscordAuthentication() {
         mock,
         close,
 
-        server: {
-          token: data.server.token as string,
+        room: data.room as {
+          id: string;
+          connection: string;
+          token: string;
         },
 
         user: data.user as Awaited<
@@ -80,17 +82,15 @@ export async function handleDiscordAuthentication() {
   }
 
   try {
-    const { userToken, auth } = await setupDiscordSdk(discordSdk);
+    const { auth, room } = await setupDiscordSdk(discordSdk);
     const data = {
-      server: {
-        token: userToken,
-      },
+      room,
 
       user: auth.user,
       locale: (await discordSdk.commands.userSettingsGetLocale()).locale,
-      member: await getActivityMember(discordSdk, auth.access_token),
-      guild: await getActivityGuild(discordSdk, auth.access_token),
-      channel: await getActivityChannel(discordSdk),
+      // member: await getActivityMember(discordSdk, auth.access_token),
+      // guild: await getActivityGuild(discordSdk, auth.access_token),
+      // channel: await getActivityChannel(discordSdk),
     };
 
     if (
@@ -146,16 +146,28 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
   }
 
   // Retrieve an access_token from your activity's server
-  const { user_token, access_token } = isEmbedded
-    ? await getAccessToken({
-        code,
-        channelId: discordSdk.channelId,
-        instanceId: discordSdk.instanceId,
-      })
-    : {
-        user_token: "mock_jwt",
-        access_token: "mock_token",
-      };
+  const {
+    error,
+    error_description,
+    user_token,
+    access_token,
+    room,
+    connection,
+  } = await authorizeUser({
+    code,
+    connectionType: isEmbedded ? "default" : "discord",
+    channelId: discordSdk.channelId,
+    instanceId: discordSdk.instanceId,
+  });
+
+  // Kick out the player if error
+  if (error) {
+    discordSdk.close(
+      RPCCloseCodes.CLOSE_ABNORMAL,
+      `Failed to authenticate: ${error_description || error}`,
+    );
+    throw new Error(`Failed to authenticate: ${error_description || error}`);
+  }
 
   // Authenticate with Discord client (using the access_token)
   const auth = await discordSdk.commands.authenticate({
@@ -163,9 +175,14 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
   });
 
   if (!auth) throw new Error("Authenticate command failed");
+
   return {
-    userToken: user_token,
     auth,
+    room: {
+      id: room,
+      connection,
+      token: user_token,
+    },
   };
 }
 

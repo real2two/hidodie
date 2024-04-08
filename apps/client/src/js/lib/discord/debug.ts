@@ -9,21 +9,17 @@ export const isEmbedded = queryParams.get("frame_id") != null;
 export enum SessionStorageQueryParam {
   sdkHack = "sdk_hack",
   userId = "user_id",
-  guildId = "guild_id",
-  channelId = "channel_id",
 }
 
 export async function createMockDiscordSdk() {
+  // Set mock values
   const mockUserId = getOverrideOrRandomSessionValue(
     SessionStorageQueryParam.userId,
   );
-  const mockGuildId = getOverrideOrRandomSessionValue(
-    SessionStorageQueryParam.guildId,
-  );
-  const mockChannelId = getOverrideOrRandomSessionValue(
-    SessionStorageQueryParam.channelId,
-  );
+  const mockGuildId = "00000000000000000"
+  const mockChannelId = "00000000000000000"
 
+  // Create mock SDK
   const discordSdk = new DiscordSDKMock(
     import.meta.env.VITE_DISCORD_CLIENT_ID,
     mockGuildId,
@@ -31,7 +27,16 @@ export async function createMockDiscordSdk() {
   );
   const discriminator = String(mockUserId.charCodeAt(0) % 5);
 
+  // @ts-ignore Sets the mock instance ID
+  discordSdk.instanceId = "00000000-0000-0000-0000-000000000000";
+
+  // Update mock commands
   discordSdk._updateCommandMocks({
+    authorize: async () => {
+      return {
+        code: "mock_code",
+      };
+    },
     authenticate: async () => {
       return {
         access_token: "mock_token",
@@ -55,6 +60,7 @@ export async function createMockDiscordSdk() {
     userSettingsGetLocale: async () => ({ locale: "en-US" }),
   });
 
+  // Returns the DiscordSDKMock
   return discordSdk;
 }
 

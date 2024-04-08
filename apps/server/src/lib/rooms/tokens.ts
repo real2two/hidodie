@@ -29,7 +29,9 @@ export async function validateUserToken(
     const data = jwt.verify(userToken, env.JWTSecret) as {
       channelId: string;
       instanceId: string;
+      gameServerId: string;
       userId: string;
+      username: string;
       exp: number;
     };
 

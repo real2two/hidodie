@@ -25,9 +25,7 @@ async function main() {
 
 export async function setupGame({
   sdk,
-  username,
   room,
-  server,
 }: Awaited<ReturnType<typeof handleDiscordSdk>>) {
   document.querySelector("#app")!.innerHTML =
     `<canvas id="canvas" width="1920" height="1080"></canvas>` +
@@ -42,9 +40,7 @@ export async function setupGame({
   const players: Player[] = [];
   const opts = await handleRoom({
     connection: room.connection,
-    roomId: room.id,
-    userToken: server.token,
-    username: username,
+    userToken: room.token,
     onOpen: ({ reply }) => {
       console.debug("Connected");
 

@@ -13,38 +13,23 @@ import { recieve, transmit } from "../lib/server";
 export const app = new HyperExpress.Server();
 
 app.upgrade("/", async (req, res) => {
-  const { username, user_token: userToken } = req.query_parameters;
-
-  // Check if username is allowed
-  if (
-    typeof username !== "string" ||
-    username.length < 2 ||
-    username.length > 32
-  ) {
-    return res.close();
-  }
-
+  const { user_token: userToken } = req.query_parameters;
+  
   // Check user token
-  let connectionData: { instanceId: string; userId: string };
-  if (env.NodeEnv === "production" || userToken !== "mock_jwt") {
-    const { success, data } = await validateUserToken(
-      userToken,
-      env.NodeEnv === "production",
-    );
-    if (!success || !data) return res.close();
-    connectionData = data;
-  } else {
-    connectionData = {
-      instanceId: "mock_room_id",
-      userId: username,
-    };
-  }
+  const { success, data } = await validateUserToken(
+    userToken,
+    env.NodeEnv === "production",
+  );
+  if (!success || !data) return res.close();
+  
+  // Check server ID
+  if (data.gameServerId !== env.GameServerId) return res.close();
 
   // Send upgrade data
   res.upgrade({
-    username,
-    roomId: connectionData.instanceId,
-    userId: connectionData.userId,
+    roomId: data.instanceId,
+    userId: data.userId,
+    username: data.username,
   });
 });
 

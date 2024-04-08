@@ -14,14 +14,25 @@ export async function validateActivityUserInstance({
   instanceId: string;
   userId: string;
 }) {
-  const instances = await getActivityInstances({
+  const data = await getActivityInstances({
     token,
     activityId,
     channelId,
   });
+
+  const instances = data?.instances || [];
   const instance = instances.find((i) => i.instance_id === instanceId);
-  if (!instance) return false;
-  return instance.users.includes(userId);
+
+  if (!instance)
+    return {
+      success: false,
+      guildId: null,
+    };
+
+  return {
+    success: instance.users.includes(userId),
+    guildId: instance.guild_id,
+  };
 }
 
 export async function getActivityInstances({
@@ -32,7 +43,7 @@ export async function getActivityInstances({
   token: string;
   activityId: string;
   channelId: string;
-}): Promise<ActivityInstances> {
+}): Promise<{ instances: ActivityInstances }> {
   if (!isSnowflake(channelId)) {
     throw new Error("activityId must be a snowflake");
   }
@@ -49,6 +60,5 @@ export async function getActivityInstances({
       },
     },
   );
-  const data = await res.json();
-  return data?.instances || [];
+  return await res.json();
 }

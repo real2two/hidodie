@@ -1,6 +1,5 @@
 import { RPCCloseCodes } from "@discord/embedded-app-sdk";
 import { handleDiscordAuthentication } from "./sdk";
-import { requestRoom } from "../server/api";
 import { isViteProduction } from "./debug";
 
 export async function handleDiscordSdk() {
@@ -31,28 +30,9 @@ export async function handleDiscordSdk() {
     },
   });
 
-  // Get username and instance ID of the player
-  const username =
-    sdk.member?.nick || sdk.user.global_name || sdk.user.username;
-  const { server } = sdk;
-
-  // Request a room based off the instance ID
-  const room = await requestRoom(
-    sdk.mock ? "default" : "discord",
-    server.token,
-  );
-  if (room.error) {
-    throw sdk.close(
-      RPCCloseCodes.CLOSE_ABNORMAL,
-      room.error_description || room.error,
-    );
-  }
-
   // Return the SDK, username and the room
   return {
     sdk,
-    username,
-    room: room.room,
-    server,
+    room: sdk.room,
   };
 }
