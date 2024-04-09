@@ -1,6 +1,12 @@
 import { ServerWebSocketTransmitTypes } from "@/utils";
 import type { GameDocs, CreateRoomHandlerOptions } from "../../../types";
 
+/**
+ * Add the game inputs
+ * @param docs The documents
+ * @param opts The options from the `handleRoom` function
+ * @returns The ability to remove the game input listeners
+ */
 export function addGameInputs(docs: GameDocs, opts: CreateRoomHandlerOptions) {
   document.addEventListener("keydown", keyDown);
   document.addEventListener("keyup", keyUp);

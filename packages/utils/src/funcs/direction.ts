@@ -1,5 +1,10 @@
 import { MovementKeyPresses, type MovementDirections } from "./game";
 
+/**
+ * Transform MovementDirections into a number that represents the value
+ * @param dir The movement directions
+ * @returns The number that represents the momement directions
+ */
 export function getDirectionValue(dir: MovementDirections) {
   let direction = MovementKeyPresses.NONE;
 
@@ -37,32 +42,35 @@ export function getDirectionValue(dir: MovementDirections) {
   return direction;
 }
 
-export function getDirection(
-  directionValue: MovementKeyPresses,
-): MovementDirections {
+/**
+ * Transform a number that represents the value into MovementDirections
+ * @param value The number that represents the momement directions
+ * @returns The movement directions
+ */
+export function getDirection(value: MovementKeyPresses): MovementDirections {
   return {
     movingLeft: [
       MovementKeyPresses.LEFT,
       MovementKeyPresses.LEFT_DOWN,
       MovementKeyPresses.LEFT_UP,
-    ].includes(directionValue),
+    ].includes(value),
 
     movingUp: [
       MovementKeyPresses.UP,
       MovementKeyPresses.LEFT_UP,
       MovementKeyPresses.RIGHT_UP,
-    ].includes(directionValue),
+    ].includes(value),
 
     movingDown: [
       MovementKeyPresses.DOWN,
       MovementKeyPresses.LEFT_DOWN,
       MovementKeyPresses.RIGHT_DOWN,
-    ].includes(directionValue),
+    ].includes(value),
 
     movingRight: [
       MovementKeyPresses.RIGHT,
       MovementKeyPresses.RIGHT_DOWN,
       MovementKeyPresses.RIGHT_UP,
-    ].includes(directionValue),
+    ].includes(value),
   };
 }

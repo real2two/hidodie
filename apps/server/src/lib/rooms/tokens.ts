@@ -17,6 +17,7 @@ export async function validateUserToken(
   userToken: string,
   expireIfValid = true,
 ) {
+  // Gets the redis key used for saving expired tokens
   const redisKey = `${EXPIREDTOKENS_NAMESPACE}:${userToken}`;
 
   try {

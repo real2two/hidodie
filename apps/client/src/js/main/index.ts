@@ -9,7 +9,7 @@ import {
   type Player,
 } from "@/utils";
 
-import { handleDiscordSdk } from "../lib/discord/setup";
+import { setupDiscordSdk } from "../lib/discord/setup";
 import { handleRoom } from "../lib/server/websocket";
 import { ChatColors, addChatMessage, clearChat } from "../lib/game";
 
@@ -19,14 +19,14 @@ import { addGameInputs } from "../lib/game/inputs";
 main();
 
 async function main() {
-  const data = await handleDiscordSdk();
+  const data = await setupDiscordSdk();
   setupGame(data);
 }
 
-export async function setupGame({
-  sdk,
-  room,
-}: Awaited<ReturnType<typeof handleDiscordSdk>>) {
+export async function setupGame(
+  activity: Awaited<ReturnType<typeof setupDiscordSdk>>,
+) {
+  // Adds the HTML for the game
   document.querySelector("#app")!.innerHTML =
     `<canvas id="canvas" width="1920" height="1080"></canvas>` +
     `<div id="chat">` +
@@ -35,12 +35,14 @@ export async function setupGame({
     `</div>` +
     `</div>`;
 
+  // Constants
   const htmlDocs = getGameDocs();
-
   const players: Player[] = [];
+
+  // Joins the room and handles it
   const opts = await handleRoom({
-    connection: room.connection,
-    userToken: room.token,
+    connection: activity.room.connection,
+    userToken: activity.room.token,
     onOpen: ({ reply }) => {
       console.debug("Connected");
 
@@ -93,7 +95,7 @@ export async function setupGame({
           break;
 
         case ServerWebSocketReceiveTypes.Kicked:
-          sdk.close(
+          activity.close(
             RPCCloseCodes.CLOSE_ABNORMAL,
             `You have been kicked from the server: ${message.reason || "No reason provided"}`,
           );
@@ -102,28 +104,33 @@ export async function setupGame({
     },
     onClose: () => {
       console.debug("Disconnected");
-      sdk.close(RPCCloseCodes.CLOSE_ABNORMAL, "Disconnected");
+      activity.close(RPCCloseCodes.CLOSE_ABNORMAL, "Disconnected");
     },
   });
 
+  // If player failed to join, close the activity
   if (!opts.success) {
-    return sdk.close(
+    return activity.close(
       RPCCloseCodes.CLOSE_ABNORMAL,
       "Failed to connect to server",
     );
   }
 
+  // Gets the canvas
   const canvas = htmlDocs.canvas;
   const ctx = htmlDocs.canvas.getContext("2d", {
     alpha: false,
   }) as CanvasRenderingContext2D;
 
+  // Runs other necessary functions
   clearChat(htmlDocs.chatMessages);
   addGameInputs(htmlDocs, opts);
 
+  // Handles resizing
   resize();
   window.onresize = resize;
 
+  // Handles drawing
   draw();
 
   function draw() {

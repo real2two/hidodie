@@ -23,6 +23,7 @@ app.upgrade("/", async (req, res) => {
   if (!success || !data) return res.close();
 
   // Check server ID
+  // If it's not the same server ID, the token will expire anyways
   if (data.gameServerId !== env.GameServerId) return res.close();
 
   // Send upgrade data

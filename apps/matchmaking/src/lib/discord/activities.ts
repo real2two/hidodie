@@ -1,6 +1,11 @@
-import { isUUID, isSnowflake } from "./ids";
+import { isSnowflake } from "./ids";
 import type { ActivityInstances } from "./types";
 
+/**
+ * Validate if a user is in an activity instance
+ * @param data The token, activity ID, channel ID, instance ID and user
+ * @returns The success state and the guild ID
+ */
 export async function validateActivityUserInstance({
   token,
   activityId,
@@ -14,27 +19,38 @@ export async function validateActivityUserInstance({
   instanceId: string;
   userId: string;
 }) {
+  // Gets alll activity instances
   const data = await getActivityInstances({
     token,
     activityId,
     channelId,
   });
 
+  // Finds the instance with the given instance ID
   const instances = data?.instances || [];
   const instance = instances.find((i) => i.instance_id === instanceId);
 
-  if (!instance)
+  if (!instance) {
+    // Failed to find instance
     return {
       success: false,
       guildId: null,
     };
+  }
 
+  // Found instance
+  // Success state depends on if the user ID is included in the users array
   return {
     success: instance.users.includes(userId),
     guildId: instance.guild_id,
   };
 }
 
+/**
+ * Get all activity instances on a voice channel
+ * @param data The token, activity ID and the channel ID
+ * @returns
+ */
 export async function getActivityInstances({
   token,
   activityId,
@@ -44,6 +60,7 @@ export async function getActivityInstances({
   activityId: string;
   channelId: string;
 }): Promise<{ instances: ActivityInstances }> {
+  // Checks if the values are valid (this is also here to prevent URL transversing)
   if (!isSnowflake(channelId)) {
     throw new Error("activityId must be a snowflake");
   }
@@ -51,6 +68,7 @@ export async function getActivityInstances({
     throw new Error("channelId must be a snowflake");
   }
 
+  // Fetches all activity instances on a voice channel and returns it
   const res = await fetch(
     `https://discord.com/api/activities/${activityId}/instances/${channelId}`,
     {

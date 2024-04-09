@@ -1,3 +1,7 @@
+/**
+ * Get the HTML documents
+ * @returns The documents
+ */
 export function getGameDocs() {
   return {
     canvas: document.querySelector("#canvas") as HTMLCanvasElement,

@@ -1,21 +1,26 @@
 import { RPCCloseCodes } from "@discord/embedded-app-sdk";
-import { handleDiscordAuthentication } from "./sdk";
-import { isViteProduction } from "./debug";
+import { loadDiscordActivity } from "./sdk";
+import { isViteProduction } from "./mock";
 
-export async function handleDiscordSdk() {
-  const sdk = await handleDiscordAuthentication();
+/**
+ * Sets up the Discord SDK and returns the data
+ * @returns The activity data
+ */
+export async function setupDiscordSdk() {
+  // Loads the Discord activity and gets the activity data
+  const activity = await loadDiscordActivity();
 
-  if (isViteProduction || sdk.platform === "mobile") {
+  if (isViteProduction || activity.platform === "mobile") {
     // Close the activity on game updates
     window.onbeforeunload = () => {
-      sdk.close(RPCCloseCodes.TOKEN_REVOKED, "Browser refreshed");
+      activity.close(RPCCloseCodes.TOKEN_REVOKED, "Browser refreshed");
     };
     // Disable right clicking
     window.oncontextmenu = () => false;
   }
 
   // Set activity on user's status
-  sdk.commands.setActivity({
+  activity.commands.setActivity({
     activity: {
       timestamps: {
         start: Date.now(),
@@ -30,9 +35,6 @@ export async function handleDiscordSdk() {
     },
   });
 
-  // Return the SDK, username and the room
-  return {
-    sdk,
-    room: sdk.room,
-  };
+  // Return the activity data
+  return activity;
 }

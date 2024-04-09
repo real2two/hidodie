@@ -14,6 +14,10 @@ const CHAT_COLOR_VALUES = {
   [ChatColors.Secondary]: "secondary",
 };
 
+/**
+ * Clear chat
+ * @param doc The <div> element
+ */
 export function clearChat(doc: HTMLDivElement) {
   // Clear chat
   messages.splice(messages.length);
@@ -21,6 +25,12 @@ export function clearChat(doc: HTMLDivElement) {
   updateChatMessage(doc);
 }
 
+/**
+ * Add a chat message
+ * @param doc The <div> element
+ * @param color The color
+ * @param message The message
+ */
 export function addChatMessage(
   doc: HTMLDivElement,
   color: ChatColors,
@@ -34,6 +44,10 @@ export function addChatMessage(
   updateChatMessage(doc);
 }
 
+/**
+ * Updates the displayed chat messages
+ * @param doc The <div> element
+ */
 export function updateChatMessage(doc: HTMLDivElement) {
   // Only keep top 9 message
   messages.splice(0, messages.length - 9);

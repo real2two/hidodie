@@ -1,4 +1,5 @@
 import { DiscordSDKMock } from "@discord/embedded-app-sdk";
+import { PermissionFlagsBits } from "discord-api-types/v10";
 
 export const isViteProduction =
   import.meta.env.VITE_NODE_ENV?.toLowerCase() === "production";
@@ -8,14 +9,15 @@ export const isEmbedded = queryParams.get("frame_id") != null;
 
 export enum SessionStorageQueryParam {
   sdkHack = "sdk_hack",
-  userId = "user_id",
 }
 
+/**
+ * Creates a mock Discord SDK
+ * @returns The DiscordSDKMock
+ */
 export async function createMockDiscordSdk() {
   // Set mock values
-  const mockUserId = getOverrideOrRandomSessionValue(
-    SessionStorageQueryParam.userId,
-  );
+  const mockUserId = "00000000000000000";
   const mockGuildId = "00000000000000000";
   const mockChannelId = "00000000000000000";
 
@@ -64,20 +66,21 @@ export async function createMockDiscordSdk() {
   return discordSdk;
 }
 
-export function getOverrideOrRandomSessionValue(
-  queryParam: `${SessionStorageQueryParam}`,
-) {
-  const overrideValue = queryParams.get(queryParam);
-  if (overrideValue != null) {
-    return overrideValue;
-  }
-
-  const currentStoredValue = sessionStorage.getItem(queryParam);
-  if (currentStoredValue != null) {
-    return currentStoredValue;
-  }
-
-  const randomString = Math.random().toString(36).slice(2, 10);
-  sessionStorage.setItem(queryParam, randomString);
-  return randomString;
+/**
+ * Creates a mock guilds response
+ * @param guildId The guild ID
+ * @returns The mock response
+ */
+export function createMockGuild(guildId: string | null) {
+  if (!guildId) return [];
+  return [
+    {
+      id: guildId,
+      name: "Mock server",
+      icon: null,
+      owner: true,
+      features: [],
+      permissions: String(PermissionFlagsBits.Administrator),
+    },
+  ];
 }

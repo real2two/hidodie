@@ -6,8 +6,7 @@ import left from "./recieve/left";
 import chat from "./recieve/chat";
 import movement from "./recieve/movement";
 
-// "recieve" for client
-// "TRANSMIT" for server
+// This might sound confusing, but recieve.ts is actually for SENDING data to the client on the game server.
 
 import { ServerWebSocketReceiveTypes } from "@/utils";
 

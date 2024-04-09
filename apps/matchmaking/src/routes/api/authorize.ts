@@ -19,6 +19,7 @@ import type {
 export const router = new HyperExpress.Router();
 
 router.post("/", async (req, res) => {
+  // Gets the body content
   const {
     code,
     connection_type: connectionType,
@@ -28,6 +29,7 @@ router.post("/", async (req, res) => {
 
   // Check if connection type is valid
   if (env.NodeEnv === "production") {
+    // If it's production, you should only be able to join through Discord
     if (connectionType !== "discord") {
       return res.status(500).json({
         error: "invalid_connection_type",
@@ -35,6 +37,7 @@ router.post("/", async (req, res) => {
       });
     }
   } else {
+    // If it's development, you should be able to join through your browser and Discord
     if (!["default", "discord"].includes(connectionType)) {
       return res.status(500).json({
         error: "invalid_connection_type",
@@ -44,13 +47,15 @@ router.post("/", async (req, res) => {
     }
   }
 
-  // Check if the snowflakes are valid
+  // Checks if channel_id a valid snowflake
   if (!isSnowflake(channelId)) {
     return res.status(400).json({
       error: "invalid_channel_id",
       error_description: "Invalid channel ID",
     });
   }
+
+  // Checks if instance_id is a valid UUID
   if (!isUUID(instanceId)) {
     return res.status(400).json({
       error: "invalid_instance_id",
@@ -67,6 +72,7 @@ router.post("/", async (req, res) => {
 
   if (env.NodeEnv !== "production" && code === "mock_code") {
     // Create a mock response for browser clients
+    // This is for development only, and should never run during production
     const mockIdAndUsername = Math.random().toString(36).slice(2, 10);
     userData = {
       id: mockIdAndUsername,
@@ -106,11 +112,13 @@ router.post("/", async (req, res) => {
     // Check if the scopes are valid
     const allScopes = scope.split(" ");
     const missingScopes: string[] = [];
+
     for (const scope of requiredScopes) {
       if (!allScopes.includes(scope)) {
         missingScopes.push(scope);
       }
     }
+
     if (missingScopes.length) {
       return res.status(403).json({
         error: "missing_scopes",
@@ -151,7 +159,7 @@ router.post("/", async (req, res) => {
       });
     }
 
-    // Get member for nickname
+    // Get member to get the member's nickname
     const memberResponse = await fetch(
       `https://discord.com/api/users/@me/guilds/${guildId}/member`,
       {
@@ -161,6 +169,7 @@ router.post("/", async (req, res) => {
         },
       },
     );
+
     const { nick } =
       (await memberResponse.json()) as RESTPatchAPIGuildMemberResult;
 
@@ -189,10 +198,12 @@ router.post("/", async (req, res) => {
       .limit(1)
   )?.[0];
 
+  // These are 2 values that will be necessary to send connection details to the client
   let gameServerId: string;
   let connection: string;
 
   if (room) {
+    // There's already a room created with the given instance ID
     gameServerId = room.serverId;
     connection =
       connectionType === "default" ? room.connection : room.discordUrlMapping;
@@ -228,7 +239,7 @@ router.post("/", async (req, res) => {
     }
   }
 
-  // Create the user token (JWT)
+  // Create the user token (JWT), which will be used for validation in the game server
   const userToken = jwt.sign(
     {
       channelId,

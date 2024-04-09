@@ -6,10 +6,7 @@ import {
 } from "@discord/embedded-app-sdk";
 import {
   RouteBases,
-  PermissionFlagsBits,
-  type APIGuildMember,
   type RESTAPIPartialCurrentUserGuild,
-  type RESTPatchAPIGuildMemberResult,
 } from "discord-api-types/v10";
 
 import { requiredScopes } from "@/utils";
@@ -20,22 +17,35 @@ import {
   isViteProduction,
   isEmbedded,
   SessionStorageQueryParam,
-} from "./debug";
+  createMockGuild,
+} from "./mock";
 
+/**
+ * Get the Discord SDK
+ * @returns The DiscordSDK or DiscordSDKMock
+ */
 export async function getDiscordSdk() {
   if (!isViteProduction && !isEmbedded) return createMockDiscordSdk();
   return new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID) as DiscordSDK;
 }
 
-export async function handleDiscordAuthentication() {
+/**
+ * Loads the Discord activity and returns any data necessary
+ * @returns The activity data
+ */
+export async function loadDiscordActivity() {
+  // Gets the DiscordSDK
   const discordSdk = await getDiscordSdk();
 
+  // Constants that's used everywhere
   const mock = discordSdk instanceof DiscordSDKMock;
   const close = mock
     ? (code: RPCCloseCodes, message: string) =>
         alert(`Error ${code}: ${message}`)
     : discordSdk.close;
 
+  // 'Hacky' solution to handle browser reloads on Discord activities
+  // This should never be enabled during production
   if (
     // Refreshes are enabled when vite isn't 'production' on .env
     !isViteProduction &&
@@ -49,6 +59,7 @@ export async function handleDiscordAuthentication() {
     // This is an instance loading after a browser refresh
     const rawData = sessionStorage.getItem(SessionStorageQueryParam.sdkHack);
     if (rawData) {
+      // If the session storage item is there, send over the data
       const data = JSON.parse(rawData);
       return {
         ...discordSdk,
@@ -65,14 +76,14 @@ export async function handleDiscordAuthentication() {
           ReturnType<typeof discordSdk.commands.authenticate>
         >["user"],
         locale: data.locale as string,
-        member: data.member as APIGuildMember,
-        guild: data.guild as RESTAPIPartialCurrentUserGuild | null,
-        channel: data.channel as Awaited<
-          ReturnType<typeof discordSdk.commands.getChannel>
-        > | null,
+        // guild: data.guild as RESTAPIPartialCurrentUserGuild | null,
+        // channel: data.channel as Awaited<
+        //   ReturnType<typeof discordSdk.commands.getChannel>
+        // > | null,
       };
     }
 
+    // Couldn't find session storage information
     discordSdk.close(
       RPCCloseCodes.TOKEN_REVOKED,
       "Could not find refresh data",
@@ -82,17 +93,21 @@ export async function handleDiscordAuthentication() {
   }
 
   try {
+    // Sets up the Discord SDK to get the authenication details
     const { auth, room } = await setupDiscordSdk(discordSdk);
+
+    // This is partially the room data
     const data = {
       room,
 
       user: auth.user,
       locale: (await discordSdk.commands.userSettingsGetLocale()).locale,
-      // member: await getActivityMember(discordSdk, auth.access_token),
       // guild: await getActivityGuild(discordSdk, auth.access_token),
       // channel: await getActivityChannel(discordSdk),
     };
 
+    // Part of the 'hacky' solution to support browser refreshes on Discord activities
+    // Again, this should be disabled during production
     if (
       // Refreshes are enabled when vite isn't 'production' on .env
       !isViteProduction &&
@@ -105,6 +120,7 @@ export async function handleDiscordAuthentication() {
       );
     }
 
+    // Returns data
     return {
       ...discordSdk,
       mock,
@@ -113,18 +129,22 @@ export async function handleDiscordAuthentication() {
       ...data,
     };
   } catch (err) {
+    // There was an error
     console.error(err);
 
-    discordSdk.close(
-      RPCCloseCodes.CLOSE_ABNORMAL,
-      "Authentication or authorization failure",
-    );
+    discordSdk.close(RPCCloseCodes.CLOSE_ABNORMAL, "Error loading activity");
 
-    throw new Error("Authentication or authorization failure");
+    throw new Error("Error loading activity");
   }
 }
 
+/**
+ * Sets up the DiscordSDK and fetches anything necessary
+ * @param discordSdk The DiscordSDK or DiscordSDKMock
+ * @returns Authentication and room data
+ */
 async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
+  // Waits for Discord to be ready
   await discordSdk.ready();
 
   // Authorize with Discord Client
@@ -174,9 +194,9 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
   const auth = await discordSdk.commands.authenticate({
     access_token,
   });
-
   if (!auth) throw new Error("Authenticate command failed");
 
+  // Sends over the data
   return {
     auth,
     room: {
@@ -187,37 +207,33 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
   };
 }
 
+/**
+ * Get user guilds
+ * @param discordSdk The DiscordSDK or DiscordSDKMock
+ * @param access_token The access token
+ * @returns The guilds
+ */
 export async function getUserGuilds(
   discordSdk: DiscordSDK | DiscordSDKMock,
   access_token: string,
 ): Promise<RESTAPIPartialCurrentUserGuild[]> {
-  if (isEmbedded) {
-    const response = await fetch(`${RouteBases.api}/users/@me/guilds`, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        "Content-Type": "application/json",
-      },
-    });
+  if (!isEmbedded) return createMockGuild(discordSdk.guildId);
 
-    return await response.json();
-  }
-
-  // Mock responses
-  if (discordSdk.guildId) {
-    return [
-      {
-        id: discordSdk.guildId,
-        name: "Mock server",
-        icon: null,
-        owner: true,
-        features: [],
-        permissions: String(PermissionFlagsBits.Administrator),
-      },
-    ];
-  }
-  return [];
+  const response = await fetch(`${RouteBases.api}/users/@me/guilds`, {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  return await response.json();
 }
 
+/**
+ * Gets the user's activity guild
+ * @param discordSdk The DiscordSDK or DiscordSDKMock
+ * @param access_token The access token
+ * @returns The guild
+ */
 export async function getActivityGuild(
   discordSdk: DiscordSDK | DiscordSDKMock,
   access_token: string,
@@ -228,6 +244,11 @@ export async function getActivityGuild(
   return guilds.find((g) => g.id === discordSdk.guildId);
 }
 
+/**
+ * Gets the activity channel
+ * @param discordSdk The DiscordSDK or DiscordSDKMock
+ * @returns The channel
+ */
 export async function getActivityChannel(
   discordSdk: DiscordSDK | DiscordSDKMock,
 ) {
@@ -236,32 +257,4 @@ export async function getActivityChannel(
   return await discordSdk.commands.getChannel({
     channel_id: discordSdk.channelId,
   });
-}
-
-export async function getActivityMember(
-  discordSdk: DiscordSDK | DiscordSDKMock,
-  access_token: string,
-): Promise<RESTPatchAPIGuildMemberResult | null> {
-  if (!discordSdk.guildId) return null;
-
-  if (isEmbedded) {
-    const response = await fetch(
-      `${RouteBases.api}/users/@me/guilds/${discordSdk.guildId}/member`,
-      {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-      },
-    );
-    return await response.json();
-  }
-
-  return {
-    roles: [],
-    joined_at: "0",
-    deaf: false,
-    mute: false,
-    flags: 0 << 0,
-  };
 }
