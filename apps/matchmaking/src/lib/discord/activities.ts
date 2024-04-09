@@ -48,6 +48,7 @@ export async function validateActivityUserInstance({
 
 /**
  * Get all activity instances on a voice channel
+ * @deprecated This endpoint is subject to breaking (ref: Discord Developers https://discord.com/channels/613425648685547541/1222027249826398250/1227003610148114493)
  * @param data The token, activity ID and the channel ID
  * @returns
  */
