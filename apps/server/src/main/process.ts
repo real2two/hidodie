@@ -69,7 +69,7 @@ async function exitHandler(startExit: boolean) {
 
       // Delete server
       /*
-        // TODO: Add a self-healing solution that automatically removes the game server when it's offline
+        // TODO: Add a self-healing solution that automatically removes the game server when it becomes suddenly offline
 
         Warning: 
         - This method is flawed if the process were to suddenly stop, because the row would still be in the database
