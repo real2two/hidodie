@@ -22,7 +22,7 @@
     "@/env": "workspace:*",
     "@/tsconfig": "workspace:*",
     "drizzle-orm": "^0.30.4",
-    "mysql2": "^3.9.2",
+    "mysql2": "^3.9.4",
     "tsx": "^4.7.0"
   }
 }
