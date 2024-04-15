@@ -37,7 +37,9 @@ export async function handleRoom({
     connection === "localhost"
       ? "ws"
       : "wss";
-  const url = `${scheme}://${connectionUrl}/?user_token=${encodeURIComponent(userToken)}`;
+  const url = `${scheme}://${connectionUrl}/?user_token=${encodeURIComponent(
+    userToken,
+  )}`;
 
   // Connect to WebSocket
   const ws = await connectToRoom(url);

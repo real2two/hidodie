@@ -19,5 +19,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "../../packages/constants/src/types.ts", "../../packages/constants/src/DataViewPush.ts"]
+  "include": [
+    "src",
+    "../../packages/constants/src/types.ts",
+    "../../packages/constants/src/DataViewPush.ts"
+  ]
 }

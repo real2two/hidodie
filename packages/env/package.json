@@ -8,9 +8,7 @@
   },
   "eslintConfig": {
     "root": true,
-    "extends": [
-      "@/eslint-config"
-    ]
+    "extends": ["@/eslint-config"]
   },
   "devDependencies": {
     "@/eslint-config": "workspace:*",

@@ -12,18 +12,11 @@
   },
   "eslintConfig": {
     "root": true,
-    "extends": [
-      "@/eslint-config"
-    ]
+    "extends": ["@/eslint-config"]
   },
   "nodemonConfig": {
-    "ignore": [
-      ".git",
-      "node_modules"
-    ],
-    "watch": [
-      "./src"
-    ],
+    "ignore": [".git", "node_modules"],
+    "watch": ["./src"],
     "exec": "npm start",
     "ext": "ts, js"
   },

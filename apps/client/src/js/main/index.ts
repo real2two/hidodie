@@ -82,7 +82,9 @@ export async function setupGame(
           addChatMessage(
             htmlDocs.chatMessages,
             ChatColors.Secondary,
-            `${sanitizeHtml(players.find((p) => p.id === message.player)?.username!)} left the server`,
+            `${sanitizeHtml(
+              players.find((p) => p.id === message.player)?.username!,
+            )} left the server`,
           );
           break;
 
@@ -90,14 +92,18 @@ export async function setupGame(
           addChatMessage(
             htmlDocs.chatMessages,
             ChatColors.Default,
-            `${sanitizeHtml(players.find((p) => p.id === message.player)?.username!)}: ${sanitizeHtml(message.message)}`,
+            `${sanitizeHtml(
+              players.find((p) => p.id === message.player)?.username!,
+            )}: ${sanitizeHtml(message.message)}`,
           );
           break;
 
         case ServerWebSocketReceiveTypes.Kicked:
           activity.close(
             RPCCloseCodes.CLOSE_ABNORMAL,
-            `You have been kicked from the server: ${message.reason || "No reason provided"}`,
+            `You have been kicked from the server: ${
+              message.reason || "No reason provided"
+            }`,
           );
           break;
       }

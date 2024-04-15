@@ -28,12 +28,8 @@
           "name": "rooms_server_id_servers_id_fk",
           "tableFrom": "rooms",
           "tableTo": "servers",
-          "columnsFrom": [
-            "server_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["server_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -41,9 +37,7 @@
       "compositePrimaryKeys": {
         "rooms_id": {
           "name": "rooms_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {}
@@ -85,9 +79,7 @@
       "compositePrimaryKeys": {
         "servers_id": {
           "name": "servers_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {}
