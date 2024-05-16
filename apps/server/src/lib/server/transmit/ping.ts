@@ -1,7 +1,7 @@
 import {
   ServerWebSocketTransmitTypes,
   type ServerWebSocketTransmitPing,
-} from "@/utils";
+} from '@/utils';
 
 export default (_view: DataView): ServerWebSocketTransmitPing => {
   // [ type ]

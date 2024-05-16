@@ -1,5 +1,5 @@
-import env from "@/env";
-import Redis from "ioredis";
+import env from '@/env';
+import Redis from 'ioredis';
 
 const redis = new Redis({
   port: env.RedisPort,
@@ -10,7 +10,7 @@ const redis = new Redis({
   enableOfflineQueue: false,
 });
 
-redis.on("error", (err) => {
+redis.on('error', (err) => {
   console.error(err);
 });
 

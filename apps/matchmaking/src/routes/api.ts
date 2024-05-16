@@ -1,19 +1,19 @@
-import HyperExpress from "hyper-express";
+import HyperExpress from 'hyper-express';
 
-import { router as authorizeRouter } from "./api/authorize";
+import { router as authorizeRouter } from './api/authorize';
 
 export const router = new HyperExpress.Router();
 
-router.get("/", (req, res) => {
+router.get('/', (req, res) => {
   res.json({
-    hello: "world",
+    hello: 'world',
   });
 });
 
-router.use("/authorize", authorizeRouter);
+router.use('/authorize', authorizeRouter);
 
-router.all("/*", (req, res) => {
+router.all('/*', (req, res) => {
   res.status(404).json({
-    error: "not_found",
+    error: 'not_found',
   });
 });

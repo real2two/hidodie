@@ -1,10 +1,10 @@
 import {
   ServerWebSocketTransmitTypes,
   type ServerWebSocketTransmitPing,
-} from "@/utils";
+} from '@/utils';
 
 export default (
-  _data: Omit<ServerWebSocketTransmitPing, "type">,
+  _data: Omit<ServerWebSocketTransmitPing, 'type'>,
 ): ArrayBuffer => {
   // [ type ]
 

@@ -2,7 +2,7 @@ import {
   getDirection,
   ServerWebSocketReceiveTypes,
   type ServerWebSocketReceiveMovement,
-} from "@/utils";
+} from '@/utils';
 
 export default (view: DataView): ServerWebSocketReceiveMovement => {
   // [ type, player, direction, posX, posY ]

@@ -2,10 +2,10 @@ import {
   getDirectionValue,
   ServerWebSocketReceiveTypes,
   type ServerWebSocketReceiveMovement,
-} from "@/utils";
+} from '@/utils';
 
 export default (
-  data: Omit<ServerWebSocketReceiveMovement, "type">,
+  data: Omit<ServerWebSocketReceiveMovement, 'type'>,
 ): ArrayBuffer => {
   // [ type, player, direction, posX, posY ]
 

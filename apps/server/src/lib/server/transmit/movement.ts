@@ -2,13 +2,13 @@ import {
   getDirection,
   ServerWebSocketTransmitTypes,
   type ServerWebSocketTransmitMovement,
-} from "@/utils";
+} from '@/utils';
 
 export default (view: DataView): ServerWebSocketTransmitMovement => {
   // [ type, direction, posX, posY ]
 
   if (view.byteLength !== 10) {
-    throw new Error("Provided invalid data (trasnmit/movement.ts)");
+    throw new Error('Provided invalid data (trasnmit/movement.ts)');
   }
 
   const direction = getDirection(view.getUint8(1));

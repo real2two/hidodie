@@ -1,5 +1,5 @@
-import { ServerWebSocketTransmitTypes } from "@/utils";
-import type { GameDocs, CreateRoomHandlerOptions } from "../../../types";
+import { ServerWebSocketTransmitTypes } from '@/utils';
+import type { GameDocs, CreateRoomHandlerOptions } from '../../../types';
 
 /**
  * Add the game inputs
@@ -8,15 +8,15 @@ import type { GameDocs, CreateRoomHandlerOptions } from "../../../types";
  * @returns The ability to remove the game input listeners
  */
 export function addGameInputs(docs: GameDocs, opts: CreateRoomHandlerOptions) {
-  document.addEventListener("keydown", keyDown);
-  document.addEventListener("keyup", keyUp);
+  document.addEventListener('keydown', keyDown);
+  document.addEventListener('keyup', keyUp);
 
   // const isTyping = () => document.activeElement === docs.sendChatInput;
 
   function keyDown(evt: KeyboardEvent) {
     const key = evt.key.toLowerCase();
     switch (key) {
-      case "enter":
+      case 'enter':
         if (document.activeElement !== docs.sendChatInput) {
           docs.sendChatInput.focus();
           docs.sendChatInput.select();
@@ -29,7 +29,7 @@ export function addGameInputs(docs: GameDocs, opts: CreateRoomHandlerOptions) {
             });
           }
 
-          docs.sendChatInput.value = "";
+          docs.sendChatInput.value = '';
           docs.sendChatInput.focus();
           docs.sendChatInput.blur();
         }
@@ -44,8 +44,8 @@ export function addGameInputs(docs: GameDocs, opts: CreateRoomHandlerOptions) {
 
   return {
     removeInputs: () => {
-      document.removeEventListener("keydown", keyDown);
-      document.removeEventListener("keyup", keyUp);
+      document.removeEventListener('keydown', keyDown);
+      document.removeEventListener('keyup', keyUp);
     },
   };
 }

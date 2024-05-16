@@ -2,7 +2,7 @@ import {
   textDecoder,
   ServerWebSocketReceiveTypes,
   type ServerWebSocketReceiveSendChatMessage,
-} from "@/utils";
+} from '@/utils';
 
 export default (view: DataView): ServerWebSocketReceiveSendChatMessage => {
   // [ type, player, message ]

@@ -1,2 +1,2 @@
-import "./listen";
-import "./process";
+import './listen';
+import './process';

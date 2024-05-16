@@ -1,24 +1,24 @@
-import env from "@/env";
-import HyperExpress from "hyper-express";
-import jwt from "jsonwebtoken";
-import { requiredScopes } from "@/utils";
+import env from '@/env';
+import HyperExpress from 'hyper-express';
+import jwt from 'jsonwebtoken';
+import { requiredScopes } from '@/utils';
 import {
   isSnowflake,
   isUUID,
   validateActivityUserInstance,
-} from "../../lib/discord";
-import { eq, sql } from "drizzle-orm";
-import { db, schema } from "@/db";
+} from '../../lib/discord';
+import { eq, sql } from 'drizzle-orm';
+import { db, schema } from '@/db';
 
 import type {
   RESTGetAPICurrentUserResult,
   RESTPatchAPIGuildMemberResult,
   RESTPostOAuth2AccessTokenResult,
-} from "discord-api-types/v10";
+} from 'discord-api-types/v10';
 
 export const router = new HyperExpress.Router();
 
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   // Gets the body content
   const {
     code,
@@ -28,19 +28,19 @@ router.post("/", async (req, res) => {
   } = await req.json();
 
   // Check if connection type is valid
-  if (env.NodeEnv === "production") {
+  if (env.NodeEnv === 'production') {
     // If it's production, you should only be able to join through Discord
-    if (connectionType !== "discord") {
+    if (connectionType !== 'discord') {
       return res.status(500).json({
-        error: "invalid_connection_type",
+        error: 'invalid_connection_type',
         error_description: "connection_type must be 'discord'",
       });
     }
   } else {
     // If it's development, you should be able to join through your browser and Discord
-    if (!["default", "discord"].includes(connectionType)) {
+    if (!['default', 'discord'].includes(connectionType)) {
       return res.status(500).json({
-        error: "invalid_connection_type",
+        error: 'invalid_connection_type',
         error_description:
           "connection_type must be either 'default' or 'discord'",
       });
@@ -50,16 +50,16 @@ router.post("/", async (req, res) => {
   // Checks if channel_id a valid snowflake
   if (!isSnowflake(channelId)) {
     return res.status(400).json({
-      error: "invalid_channel_id",
-      error_description: "Invalid channel ID",
+      error: 'invalid_channel_id',
+      error_description: 'Invalid channel ID',
     });
   }
 
   // Checks if instance_id is a valid UUID
   if (!isUUID(instanceId)) {
     return res.status(400).json({
-      error: "invalid_instance_id",
-      error_description: "Invalid instance ID",
+      error: 'invalid_instance_id',
+      error_description: 'Invalid instance ID',
     });
   }
 
@@ -70,26 +70,26 @@ router.post("/", async (req, res) => {
     accessToken: string;
   };
 
-  if (env.NodeEnv !== "production" && code === "mock_code") {
+  if (env.NodeEnv !== 'production' && code === 'mock_code') {
     // Create a mock response for browser clients
     // This is for development only, and should never run during production
     const mockIdAndUsername = Math.random().toString(36).slice(2, 10);
     userData = {
       id: mockIdAndUsername,
       username: mockIdAndUsername,
-      accessToken: "mock_token",
+      accessToken: 'mock_token',
     };
   } else {
     // Check for OAuth2 to get the user ID
-    const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
-      method: "POST",
+    const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
         client_id: env.DiscordClientId,
         client_secret: env.DiscordClientSecret,
-        grant_type: "authorization_code",
+        grant_type: 'authorization_code',
         code,
       }),
     });
@@ -104,13 +104,13 @@ router.post("/", async (req, res) => {
 
     if (!tokenResponse.ok || error) {
       return res.status(403).json({
-        error: "authentication_failure",
-        error_description: "Authentication or authorization failure",
+        error: 'authentication_failure',
+        error_description: 'Authentication or authorization failure',
       });
     }
 
     // Check if the scopes are valid
-    const allScopes = scope.split(" ");
+    const allScopes = scope.split(' ');
     const missingScopes: string[] = [];
 
     for (const scope of requiredScopes) {
@@ -121,15 +121,15 @@ router.post("/", async (req, res) => {
 
     if (missingScopes.length) {
       return res.status(403).json({
-        error: "missing_scopes",
-        error_description: `Missing scopes: ${missingScopes.join(", ")}`,
+        error: 'missing_scopes',
+        error_description: `Missing scopes: ${missingScopes.join(', ')}`,
         scope: missingScopes,
       });
     }
 
     // Get user ID and username
-    const userResponse = await fetch("https://discord.com/api/users/@me", {
-      method: "get",
+    const userResponse = await fetch('https://discord.com/api/users/@me', {
+      method: 'get',
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -153,9 +153,9 @@ router.post("/", async (req, res) => {
 
     if (!validChannelAndInstanceId) {
       return res.status(403).json({
-        error: "invalid_channel_or_instance_id",
+        error: 'invalid_channel_or_instance_id',
         error_message:
-          "Failed to validate that you have access to this instance",
+          'Failed to validate that you have access to this instance',
       });
     }
 
@@ -165,7 +165,7 @@ router.post("/", async (req, res) => {
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       },
     );
@@ -206,7 +206,7 @@ router.post("/", async (req, res) => {
     // There's already a room created with the given instance ID
     gameServerId = room.serverId;
     connection =
-      connectionType === "default" ? room.connection : room.discordUrlMapping;
+      connectionType === 'default' ? room.connection : room.discordUrlMapping;
   } else {
     // Create a new room
     const server = (
@@ -226,14 +226,14 @@ router.post("/", async (req, res) => {
 
       // TODO: Create a game server, instead of responding servers_unavailable
       return res.json({
-        error: "servers_unavailable",
-        error_description: "No servers are currently available",
+        error: 'servers_unavailable',
+        error_description: 'No servers are currently available',
       });
     } else {
       // Found an available game server, so create a room on the game server
       gameServerId = server.serverId;
       connection =
-        connectionType === "default"
+        connectionType === 'default'
           ? server.connection
           : server.discordUrlMapping;
     }
@@ -249,7 +249,7 @@ router.post("/", async (req, res) => {
       username: userData.username,
     },
     env.JWTSecret,
-    env.NodeEnv === "production"
+    env.NodeEnv === 'production'
       ? {
           expiresIn: 60,
         }

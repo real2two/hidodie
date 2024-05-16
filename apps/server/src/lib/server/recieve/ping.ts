@@ -1,7 +1,7 @@
 import {
   ServerWebSocketReceiveTypes,
   type ServerWebSocketReceivePing,
-} from "@/utils";
+} from '@/utils';
 
 export default (): ArrayBuffer => {
   // [ type ]

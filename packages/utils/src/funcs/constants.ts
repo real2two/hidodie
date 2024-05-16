@@ -1,9 +1,9 @@
-import { Types } from "@discord/embedded-app-sdk";
+import { Types } from '@discord/embedded-app-sdk';
 
 /** These are the required scopes to authenticate to the activity */
 export const requiredScopes: Types.OAuthScopes[] = [
-  "identify",
+  'identify',
   // "guilds",
-  "guilds.members.read",
-  "rpc.activities.write",
+  'guilds.members.read',
+  'rpc.activities.write',
 ];

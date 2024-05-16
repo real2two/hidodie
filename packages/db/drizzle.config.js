@@ -1,9 +1,9 @@
-import env from "@/env";
+import env from '@/env';
 
 export default {
-  schema: "./schema/**/*",
-  out: "./drizzle/migrations",
-  driver: "mysql2",
+  schema: './schema/**/*',
+  out: './drizzle/migrations',
+  driver: 'mysql2',
   dbCredentials: {
     host: env.DatabaseHost,
     user: env.DatabaseUser,

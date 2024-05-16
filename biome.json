@@ -11,5 +11,10 @@
   },
   "formatter": {
     "indentStyle": "space"
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single"
+    }
   }
 }

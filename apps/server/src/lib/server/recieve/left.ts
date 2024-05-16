@@ -1,10 +1,10 @@
 import {
   ServerWebSocketReceiveTypes,
   type ServerWebSocketReceivePlayerLeft,
-} from "@/utils";
+} from '@/utils';
 
 export default (
-  data: Omit<ServerWebSocketReceivePlayerLeft, "type">,
+  data: Omit<ServerWebSocketReceivePlayerLeft, 'type'>,
 ): ArrayBuffer => {
   // [ type, player ]
 

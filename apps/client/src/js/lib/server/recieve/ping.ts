@@ -1,7 +1,7 @@
 import {
   ServerWebSocketReceiveTypes,
   type ServerWebSocketReceivePing,
-} from "@/utils";
+} from '@/utils';
 
 export default (_view: DataView): ServerWebSocketReceivePing => {
   // [ type ]

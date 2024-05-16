@@ -1,16 +1,16 @@
-import cluster from "cluster";
-import env from "@/env";
-import { cpus } from "os";
+import cluster from 'cluster';
+import env from '@/env';
+import { cpus } from 'os';
 
 // Sets the worker file to worker.ts
 
 cluster.setupPrimary({
-  exec: "src/http/listen.ts",
+  exec: 'src/http/listen.ts',
 });
 
 // When the cluster crashes, it creates a new cluster.
 
-cluster.on("exit", (worker) => {
+cluster.on('exit', (worker) => {
   console.log(`#${worker.process.pid} The worker died.`);
   createCluster();
 });

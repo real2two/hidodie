@@ -1,7 +1,7 @@
 import {
   ServerWebSocketReceiveTypes,
   type ServerWebSocketReceivePlayerLeft,
-} from "@/utils";
+} from '@/utils';
 
 export default (view: DataView): ServerWebSocketReceivePlayerLeft => {
   // [ type, player ]

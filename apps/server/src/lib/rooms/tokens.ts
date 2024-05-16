@@ -1,8 +1,8 @@
-import env from "@/env";
-import redis from "@/redis";
-import jwt from "jsonwebtoken";
+import env from '@/env';
+import redis from '@/redis';
+import jwt from 'jsonwebtoken';
 
-export const EXPIREDTOKENS_NAMESPACE = "expired_tokens";
+export const EXPIREDTOKENS_NAMESPACE = 'expired_tokens';
 export const expiredTokens = new Map<string, number>();
 
 const cachedExpiredTokens = new Set<string>();
@@ -41,7 +41,7 @@ export async function validateUserToken(
       // Optimal expiration value: data.exp * 1000 (if dates are synced)
       cachedExpiredTokens.add(redisKey);
       try {
-        await redis.set(redisKey, data.exp, "EX", 60000);
+        await redis.set(redisKey, data.exp, 'EX', 60000);
       } catch (err2) {
         console.error(err2);
       }

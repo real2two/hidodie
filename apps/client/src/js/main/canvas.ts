@@ -1,8 +1,8 @@
-import type { GameDocs } from "../../types";
+import type { GameDocs } from '../../types';
 
 export function setupCanvas({ canvas, chatMessages }: GameDocs) {
   // Gets the canvas
-  const ctx = canvas.getContext("2d", {
+  const ctx = canvas.getContext('2d', {
     alpha: false,
   }) as CanvasRenderingContext2D;
 
@@ -16,7 +16,7 @@ export function setupCanvas({ canvas, chatMessages }: GameDocs) {
   function draw() {
     ctx.clearRect(0, 0, 1920, 1080);
 
-    ctx.fillStyle = "white";
+    ctx.fillStyle = 'white';
     ctx.fillRect(100, 100, 75, 75);
 
     requestAnimationFrame(draw);

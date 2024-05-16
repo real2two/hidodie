@@ -1,4 +1,4 @@
-import type { MovementDirections } from "..";
+import type { MovementDirections } from '..';
 
 // Message types
 export enum ServerWebSocketReceiveTypes {

@@ -1,5 +1,5 @@
-import { isSnowflake } from "./ids";
-import type { ActivityInstances } from "./types";
+import { isSnowflake } from './ids';
+import type { ActivityInstances } from './types';
 
 /**
  * Validate if a user is in an activity instance
@@ -63,17 +63,17 @@ export async function getActivityInstances({
 }): Promise<{ instances: ActivityInstances }> {
   // Checks if the values are valid (this is also here to prevent URL transversing)
   if (!isSnowflake(channelId)) {
-    throw new Error("activityId must be a snowflake");
+    throw new Error('activityId must be a snowflake');
   }
   if (!isSnowflake(channelId)) {
-    throw new Error("channelId must be a snowflake");
+    throw new Error('channelId must be a snowflake');
   }
 
   // Fetches all activity instances on a voice channel and returns it
   const res = await fetch(
     `https://discord.com/api/activities/${activityId}/instances/${channelId}`,
     {
-      method: "get",
+      method: 'get',
       headers: {
         authorization: `Bot ${token}`,
       },

@@ -2,7 +2,7 @@ import {
   textDecoder,
   ServerWebSocketReceiveTypes,
   type ServerWebSocketReceiveKicked,
-} from "@/utils";
+} from '@/utils';
 
 export default (view: DataView): ServerWebSocketReceiveKicked => {
   // [ type, message ]

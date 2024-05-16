@@ -1,24 +1,24 @@
-import env from "@/env";
-import HyperExpress from "hyper-express";
-import { eq } from "drizzle-orm";
-import { db, schema } from "@/db";
+import env from '@/env';
+import HyperExpress from 'hyper-express';
+import { eq } from 'drizzle-orm';
+import { db, schema } from '@/db';
 import {
   ServerWebSocketTransmitTypes,
   ServerWebSocketReceiveTypes,
-} from "@/utils";
+} from '@/utils';
 
-import { rooms, validateUserToken, type Player, type Room } from "../lib/rooms";
-import { recieve, transmit } from "../lib/server";
+import { rooms, validateUserToken, type Player, type Room } from '../lib/rooms';
+import { recieve, transmit } from '../lib/server';
 
 export const app = new HyperExpress.Server();
 
-app.upgrade("/", async (req, res) => {
+app.upgrade('/', async (req, res) => {
   const { user_token: userToken } = req.query_parameters;
 
   // Check user token
   const { success, data } = await validateUserToken(
     userToken,
-    env.NodeEnv === "production",
+    env.NodeEnv === 'production',
   );
   if (!success || !data) return res.close();
 
@@ -35,11 +35,11 @@ app.upgrade("/", async (req, res) => {
 });
 
 app.ws(
-  "/",
+  '/',
   {
     idle_timeout: 60,
     max_payload_length: 32 * 1024,
-    message_type: "ArrayBuffer",
+    message_type: 'ArrayBuffer',
   },
   async (ws) => {
     const { roomId, userId, username } = ws.context;
@@ -57,7 +57,7 @@ app.ws(
         console.error(err);
         ws.send(
           recieve[ServerWebSocketReceiveTypes.Kicked]({
-            reason: "Failed to create room. Please try again.",
+            reason: 'Failed to create room. Please try again.',
           }),
         );
         return ws.close();
@@ -81,7 +81,7 @@ app.ws(
     } else if (room.players.length >= 25) {
       ws.send(
         recieve[ServerWebSocketReceiveTypes.Kicked]({
-          reason: "The room is full",
+          reason: 'The room is full',
         }),
       );
       return ws.close();
@@ -134,9 +134,9 @@ app.ws(
       }),
     );
 
-    console.log("A player has joined room:", roomId);
+    console.log('A player has joined room:', roomId);
 
-    ws.on("message", (buffer: ArrayBuffer, isBinary: boolean) => {
+    ws.on('message', (buffer: ArrayBuffer, isBinary: boolean) => {
       try {
         if (!isBinary) return;
 
@@ -148,7 +148,7 @@ app.ws(
 
         if (!transformed) return;
 
-        console.log("WebSocket transformed message", transformed);
+        console.log('WebSocket transformed message', transformed);
 
         switch (transformed.type) {
           case ServerWebSocketTransmitTypes.Ping:
@@ -168,7 +168,7 @@ app.ws(
       }
     });
 
-    ws.once("close", async () => {
+    ws.once('close', async () => {
       console.log(`A player has disconnected`);
 
       // Send leave message
@@ -190,9 +190,9 @@ app.ws(
   },
 );
 
-app.all("*", (req, res) => {
+app.all('*', (req, res) => {
   res.status(404).json({
-    error: "not_found",
+    error: 'not_found',
   });
 });
 

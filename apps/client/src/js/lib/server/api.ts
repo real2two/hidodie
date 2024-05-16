@@ -5,14 +5,14 @@ export async function authorizeUser({
   instanceId,
 }: {
   code: string;
-  connectionType: "default" | "discord";
+  connectionType: 'default' | 'discord';
   channelId: string;
   instanceId: string;
 }) {
-  const response = await fetch("/api/authorize", {
-    method: "POST",
+  const response = await fetch('/api/authorize', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       code,

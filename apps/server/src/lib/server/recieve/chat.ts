@@ -2,10 +2,10 @@ import {
   textEncoder,
   ServerWebSocketReceiveTypes,
   type ServerWebSocketReceiveSendChatMessage,
-} from "@/utils";
+} from '@/utils';
 
 export default (
-  data: Omit<ServerWebSocketReceiveSendChatMessage, "type">,
+  data: Omit<ServerWebSocketReceiveSendChatMessage, 'type'>,
 ): ArrayBuffer => {
   // [ type, player, message ]
 

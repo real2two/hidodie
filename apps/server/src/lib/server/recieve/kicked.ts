@@ -2,10 +2,10 @@ import {
   textEncoder,
   ServerWebSocketReceiveTypes,
   type ServerWebSocketReceiveKicked,
-} from "@/utils";
+} from '@/utils';
 
 export default (
-  data: Omit<ServerWebSocketReceiveKicked, "type">,
+  data: Omit<ServerWebSocketReceiveKicked, 'type'>,
 ): ArrayBuffer => {
   // [ type, reason ]
 

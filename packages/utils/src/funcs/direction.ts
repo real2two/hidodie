@@ -1,4 +1,4 @@
-import { MovementKeyPresses, type MovementDirections } from "./game";
+import { MovementKeyPresses, type MovementDirections } from './game';
 
 /**
  * Transform MovementDirections into a number that represents the value

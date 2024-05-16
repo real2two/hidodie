@@ -1,4 +1,4 @@
-import { sanitizeHtml } from "@/utils";
+import { sanitizeHtml } from '@/utils';
 
 const messages: string[] = [];
 
@@ -10,10 +10,10 @@ export enum ChatColors {
 }
 
 const CHAT_COLOR_VALUES = {
-  [ChatColors.Default]: "default",
-  [ChatColors.Success]: "success",
-  [ChatColors.Error]: "error",
-  [ChatColors.Secondary]: "secondary",
+  [ChatColors.Default]: 'default',
+  [ChatColors.Success]: 'success',
+  [ChatColors.Error]: 'error',
+  [ChatColors.Secondary]: 'secondary',
 };
 
 /**
@@ -56,7 +56,7 @@ export function updateChatMessage(doc: HTMLDivElement) {
   // Only keep top 9 message
   messages.splice(0, messages.length - 9);
   // Update chat messages
-  doc.innerHTML = messages.join("");
+  doc.innerHTML = messages.join('');
   // Scroll down
   doc.scrollTop = doc.scrollHeight;
 }

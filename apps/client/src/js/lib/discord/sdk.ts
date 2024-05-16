@@ -3,14 +3,14 @@ import {
   DiscordSDKMock,
   RPCCloseCodes,
   Platform,
-} from "@discord/embedded-app-sdk";
+} from '@discord/embedded-app-sdk';
 import {
   RouteBases,
   type RESTAPIPartialCurrentUserGuild,
-} from "discord-api-types/v10";
+} from 'discord-api-types/v10';
 
-import { requiredScopes } from "@/utils";
-import { authorizeUser } from "../server/api";
+import { requiredScopes } from '@/utils';
+import { authorizeUser } from '../server/api';
 
 import {
   createMockDiscordSdk,
@@ -18,7 +18,7 @@ import {
   isEmbedded,
   SessionStorageQueryParam,
   createMockGuild,
-} from "./mock";
+} from './mock';
 
 /**
  * Get the Discord SDK
@@ -54,7 +54,7 @@ export async function loadDiscordActivity() {
     // Checks the platform, because this breaks on mobile
     discordSdk.platform === Platform.DESKTOP &&
     // @ts-ignore Checks if it's NOT the origin
-    !discordSdk.sourceOrigin.includes("discord.com")
+    !discordSdk.sourceOrigin.includes('discord.com')
   ) {
     // This is an instance loading after a browser refresh
     const rawData = sessionStorage.getItem(SessionStorageQueryParam.sdkHack);
@@ -74,7 +74,7 @@ export async function loadDiscordActivity() {
 
         user: data.user as Awaited<
           ReturnType<typeof discordSdk.commands.authenticate>
-        >["user"],
+        >['user'],
         locale: data.locale as string,
         // guild: data.guild as RESTAPIPartialCurrentUserGuild | null,
         // channel: data.channel as Awaited<
@@ -84,9 +84,9 @@ export async function loadDiscordActivity() {
     }
 
     // Couldn't find session storage information
-    close(RPCCloseCodes.TOKEN_REVOKED, "Could not find refresh data");
+    close(RPCCloseCodes.TOKEN_REVOKED, 'Could not find refresh data');
 
-    throw new Error("Could not find refresh data");
+    throw new Error('Could not find refresh data');
   }
 
   try {
@@ -129,9 +129,9 @@ export async function loadDiscordActivity() {
     // There was an error
     console.error(err);
 
-    close(RPCCloseCodes.CLOSE_ABNORMAL, "Error loading activity");
+    close(RPCCloseCodes.CLOSE_ABNORMAL, 'Error loading activity');
 
-    throw new Error("Error loading activity");
+    throw new Error('Error loading activity');
   }
 }
 
@@ -147,9 +147,9 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
   // Authorize with Discord Client
   const { code } = await discordSdk.commands.authorize({
     client_id: import.meta.env.VITE_DISCORD_CLIENT_ID,
-    response_type: "code",
-    state: "",
-    prompt: "none",
+    response_type: 'code',
+    state: '',
+    prompt: 'none',
     scope: requiredScopes,
   });
 
@@ -157,9 +157,9 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
   if (!discordSdk.channelId) {
     discordSdk.close(
       RPCCloseCodes.CLOSE_UNSUPPORTED,
-      "channelId was not provided in DiscordSDK",
+      'channelId was not provided in DiscordSDK',
     );
-    throw new Error("channelId was not provided in DiscordSDK");
+    throw new Error('channelId was not provided in DiscordSDK');
   }
 
   // Retrieve an access_token from your activity's server
@@ -173,7 +173,7 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
   } = await authorizeUser({
     code,
     connectionType:
-      discordSdk instanceof DiscordSDKMock ? "default" : "discord",
+      discordSdk instanceof DiscordSDKMock ? 'default' : 'discord',
     channelId: discordSdk.channelId,
     instanceId: discordSdk.instanceId,
   });
@@ -191,7 +191,7 @@ async function setupDiscordSdk(discordSdk: DiscordSDK | DiscordSDKMock) {
   const auth = await discordSdk.commands.authenticate({
     access_token,
   });
-  if (!auth) throw new Error("Authenticate command failed");
+  if (!auth) throw new Error('Authenticate command failed');
 
   // Sends over the data
   return {
@@ -219,7 +219,7 @@ export async function getUserGuilds(
   const response = await fetch(`${RouteBases.api}/users/@me/guilds`, {
     headers: {
       Authorization: `Bearer ${access_token}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
   return await response.json();

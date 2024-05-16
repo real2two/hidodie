@@ -2,10 +2,10 @@ import {
   textEncoder,
   ServerWebSocketReceiveTypes,
   type ServerWebSocketReceivePlayerAdded,
-} from "@/utils";
+} from '@/utils';
 
 export default (
-  data: Omit<ServerWebSocketReceivePlayerAdded, "type">,
+  data: Omit<ServerWebSocketReceivePlayerAdded, 'type'>,
 ): ArrayBuffer => {
   // [ type, player, username ]
 

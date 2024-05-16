@@ -2,7 +2,7 @@ import {
   textDecoder,
   ServerWebSocketReceiveTypes,
   type ServerWebSocketReceivePlayerAdded,
-} from "@/utils";
+} from '@/utils';
 
 export default (view: DataView): ServerWebSocketReceivePlayerAdded => {
   // [ type, player, username ]

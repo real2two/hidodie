@@ -1,6 +1,6 @@
-import env from "@/env";
-import { eq } from "drizzle-orm";
-import { db, schema } from "@/db";
+import env from '@/env';
+import { eq } from 'drizzle-orm';
+import { db, schema } from '@/db';
 
 let exiting = false;
 process.stdin.resume();
@@ -8,7 +8,7 @@ process.stdin.resume();
 startRoom();
 
 async function startRoom() {
-  if (env.NodeEnv !== "production") {
+  if (env.NodeEnv !== 'production') {
     try {
       // Delete all rooms in the game server
       // This runs first, because db.insert is likely to error
@@ -42,7 +42,7 @@ async function startRoom() {
     });
   } catch (err) {
     // If it fails, it errors
-    console.error("Failed to open server with ID:", env.GameServerId);
+    console.error('Failed to open server with ID:', env.GameServerId);
     console.error(err);
     // It sets exiting = true to prevent the default exit actions
     exiting = true;
@@ -50,7 +50,7 @@ async function startRoom() {
   }
 
   // Logs that the server was open, which means the database row was created
-  console.log("Server opened with ID:", env.GameServerId);
+  console.log('Server opened with ID:', env.GameServerId);
 }
 
 async function exitHandler(startExit: boolean) {
@@ -58,7 +58,7 @@ async function exitHandler(startExit: boolean) {
     // Check and set exiting state
     if (exiting) return;
     exiting = true;
-    console.log("Closing room...");
+    console.log('Closing room...');
 
     // Delete database rows
     try {
@@ -83,14 +83,14 @@ async function exitHandler(startExit: boolean) {
     }
 
     // Close the process
-    console.log("Room closed.");
+    console.log('Room closed.');
     process.exit();
   }
 }
 
 // Add the exit events here
-process.on("exit", () => exitHandler(true));
-process.on("SIGINT", () => exitHandler(true));
-process.on("SIGUSR1", () => exitHandler(true));
-process.on("SIGUSR2", () => exitHandler(true));
-process.on("uncaughtException", () => exitHandler(true));
+process.on('exit', () => exitHandler(true));
+process.on('SIGINT', () => exitHandler(true));
+process.on('SIGUSR1', () => exitHandler(true));
+process.on('SIGUSR2', () => exitHandler(true));
+process.on('uncaughtException', () => exitHandler(true));

@@ -3,12 +3,12 @@ import {
   type ServerWebSocketReceive,
   type ServerWebSocketReceiveTypes,
   type ServerWebSocketTransmit,
-} from "@/utils";
+} from '@/utils';
 
-import recieve from "./recieve";
-import transmit from "./transmit";
+import recieve from './recieve';
+import transmit from './transmit';
 
-import type { CreateRoomHandlerOptions } from "../../../types";
+import type { CreateRoomHandlerOptions } from '../../../types';
 
 export async function handleRoom({
   connection,
@@ -28,15 +28,15 @@ export async function handleRoom({
   onClose: (opts: CreateRoomHandlerOptions) => unknown;
 }) {
   // Find websocket URL
-  const connectionUrl = connection.startsWith("/")
+  const connectionUrl = connection.startsWith('/')
     ? `${document.location.host}${connection}`
     : connection;
   const scheme =
-    document.location.protocol !== "https:" ||
-    connection.startsWith("localhost:") ||
-    connection === "localhost"
-      ? "ws"
-      : "wss";
+    document.location.protocol !== 'https:' ||
+    connection.startsWith('localhost:') ||
+    connection === 'localhost'
+      ? 'ws'
+      : 'wss';
   const url = `${scheme}://${connectionUrl}/?user_token=${encodeURIComponent(
     userToken,
   )}`;
@@ -47,7 +47,7 @@ export async function handleRoom({
     return {
       success: false,
       reply: (_data: ServerWebSocketTransmit) => {
-        throw new Error("Cannot use reply on an unsuccessful connection");
+        throw new Error('Cannot use reply on an unsuccessful connection');
       },
     };
   }
@@ -78,7 +78,7 @@ export async function handleRoom({
   // Close handler
   ws.onclose = () => onClose(opts);
   ws.onerror = (evt) => {
-    console.error("WebSocket error", evt);
+    console.error('WebSocket error', evt);
     ws.close();
   };
 
@@ -104,7 +104,7 @@ export function createRoomHandlerOptions(ws: WebSocket) {
 
 async function connectToRoom(url: string): Promise<WebSocket | null> {
   const ws = new WebSocket(url);
-  ws.binaryType = "arraybuffer";
+  ws.binaryType = 'arraybuffer';
 
   let opened = false;
   return new Promise((resolve) => {
@@ -115,7 +115,7 @@ async function connectToRoom(url: string): Promise<WebSocket | null> {
       if (!opened) return resolve(null);
     };
     ws.onerror = (evt) => {
-      console.error("WebSocket error", evt);
+      console.error('WebSocket error', evt);
       ws.close();
     };
   });

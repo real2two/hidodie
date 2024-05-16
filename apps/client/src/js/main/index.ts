@@ -1,20 +1,20 @@
-import "../../css/style.css";
+import '../../css/style.css';
 
-import { RPCCloseCodes } from "@discord/embedded-app-sdk";
+import { RPCCloseCodes } from '@discord/embedded-app-sdk';
 
 import {
   ServerWebSocketReceiveTypes,
   ServerWebSocketTransmitTypes,
   type Player,
-} from "@/utils";
+} from '@/utils';
 
-import { setupDiscordSdk } from "../lib/discord/setup";
-import { handleRoom } from "../lib/server/websocket";
-import { ChatColors, addChatMessage, clearChat } from "../lib/game";
-import { addGameInputs } from "../lib/game/inputs";
+import { setupDiscordSdk } from '../lib/discord/setup';
+import { handleRoom } from '../lib/server/websocket';
+import { ChatColors, addChatMessage, clearChat } from '../lib/game';
+import { addGameInputs } from '../lib/game/inputs';
 
-import { getGameDocs } from "./docs";
-import { setupCanvas } from "./canvas";
+import { getGameDocs } from './docs';
+import { setupCanvas } from './canvas';
 
 main();
 
@@ -27,7 +27,7 @@ export async function setupGame(
   activity: Awaited<ReturnType<typeof setupDiscordSdk>>,
 ) {
   // Adds the HTML for the game
-  document.querySelector("#app")!.innerHTML =
+  document.querySelector('#app')!.innerHTML =
     `<canvas id="canvas" width="1920" height="1080"></canvas>` +
     `<div id="chat">` +
     `<div id="chat-container"></div>` +
@@ -44,7 +44,7 @@ export async function setupGame(
     connection: activity.room.connection,
     userToken: activity.room.token,
     onOpen: ({ reply }) => {
-      console.debug("Connected");
+      console.debug('Connected');
 
       // Ping!
       reply({
@@ -52,7 +52,7 @@ export async function setupGame(
       });
     },
     onMessage: ({ message, reply }) => {
-      console.debug("Message recieved", message);
+      console.debug('Message recieved', message);
 
       switch (message.type) {
         case ServerWebSocketReceiveTypes.PlayerAdded:
@@ -101,15 +101,15 @@ export async function setupGame(
           activity.close(
             RPCCloseCodes.CLOSE_ABNORMAL,
             `You have been kicked from the server: ${
-              message.reason || "No reason provided"
+              message.reason || 'No reason provided'
             }`,
           );
           break;
       }
     },
     onClose: () => {
-      console.debug("Disconnected");
-      activity.close(RPCCloseCodes.CLOSE_ABNORMAL, "Disconnected");
+      console.debug('Disconnected');
+      activity.close(RPCCloseCodes.CLOSE_ABNORMAL, 'Disconnected');
     },
   });
 
@@ -117,7 +117,7 @@ export async function setupGame(
   if (!opts.success) {
     return activity.close(
       RPCCloseCodes.CLOSE_ABNORMAL,
-      "Failed to connect to server",
+      'Failed to connect to server',
     );
   }
 
