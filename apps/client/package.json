@@ -18,11 +18,11 @@
     "@/eslint-config": "workspace:*",
     "@/tsconfig": "workspace:*",
     "@/utils": "workspace:*",
-    "typescript": "^5.2.2",
-    "vite": "^5.2.0"
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
   },
   "dependencies": {
-    "@discord/embedded-app-sdk": "^1.0.2",
-    "discord-api-types": "^0.37.76"
+    "@discord/embedded-app-sdk": "^1.2.0",
+    "discord-api-types": "^0.37.83"
   }
 }

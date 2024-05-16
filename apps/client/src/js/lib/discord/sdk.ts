@@ -39,10 +39,10 @@ export async function loadDiscordActivity() {
 
   // Constants that's used everywhere
   const mock = discordSdk instanceof DiscordSDKMock;
-  const close = mock
-    ? (code: RPCCloseCodes, message: string) =>
-        alert(`Error ${code}: ${message}`)
-    : discordSdk.close;
+  const close = (code: RPCCloseCodes, message: string) => {
+    if (mock) alert(`Error ${code}: ${message}`);
+    discordSdk.close(code, message);
+  };
 
   // 'Hacky' solution to handle browser reloads on Discord activities
   // This should never be enabled during production
@@ -84,10 +84,7 @@ export async function loadDiscordActivity() {
     }
 
     // Couldn't find session storage information
-    discordSdk.close(
-      RPCCloseCodes.TOKEN_REVOKED,
-      "Could not find refresh data",
-    );
+    close(RPCCloseCodes.TOKEN_REVOKED, "Could not find refresh data");
 
     throw new Error("Could not find refresh data");
   }
@@ -132,7 +129,7 @@ export async function loadDiscordActivity() {
     // There was an error
     console.error(err);
 
-    discordSdk.close(RPCCloseCodes.CLOSE_ABNORMAL, "Error loading activity");
+    close(RPCCloseCodes.CLOSE_ABNORMAL, "Error loading activity");
 
     throw new Error("Error loading activity");
   }
