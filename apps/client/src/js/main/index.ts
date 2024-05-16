@@ -3,7 +3,6 @@ import "../../css/style.css";
 import { RPCCloseCodes } from "@discord/embedded-app-sdk";
 
 import {
-  sanitizeHtml,
   ServerWebSocketReceiveTypes,
   ServerWebSocketTransmitTypes,
   type Player,
@@ -74,7 +73,7 @@ export async function setupGame(
             addChatMessage(
               htmlDocs.chatMessages,
               ChatColors.Secondary,
-              `${sanitizeHtml(message.username)} joined the server`,
+              `${message.username} joined the server`,
             );
           }
           break;
@@ -83,9 +82,8 @@ export async function setupGame(
           addChatMessage(
             htmlDocs.chatMessages,
             ChatColors.Secondary,
-            `${sanitizeHtml(
-              players.find((p) => p.id === message.player)?.username!,
-            )} left the server`,
+            `${players.find((p) => p.id === message.player)
+              ?.username!} left the server`,
           );
           break;
 
@@ -93,9 +91,9 @@ export async function setupGame(
           addChatMessage(
             htmlDocs.chatMessages,
             ChatColors.Default,
-            `${sanitizeHtml(
-              players.find((p) => p.id === message.player)?.username!,
-            )}: ${sanitizeHtml(message.message)}`,
+            `${players.find((p) => p.id === message.player)?.username!}: ${
+              message.message
+            }`,
           );
           break;
 

@@ -1,3 +1,5 @@
+import { sanitizeHtml } from "@/utils";
+
 const messages: string[] = [];
 
 export enum ChatColors {
@@ -38,7 +40,9 @@ export function addChatMessage(
 ) {
   // Add message
   messages.push(
-    `<span class="chat-${CHAT_COLOR_VALUES[color]}">${message}<br></span>`,
+    `<span class="chat-${CHAT_COLOR_VALUES[color]}">${sanitizeHtml(
+      message,
+    )}<br></span>`,
   );
   // Update chat messages
   updateChatMessage(doc);
