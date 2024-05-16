@@ -26,7 +26,7 @@ import {
  */
 export async function getDiscordSdk() {
   if (!isViteProduction && !isEmbedded) return createMockDiscordSdk();
-  return new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID) as DiscordSDK;
+  return new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 }
 
 /**
